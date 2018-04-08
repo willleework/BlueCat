@@ -62,6 +62,9 @@
       <HintPath>..\packages\MySql.Data.Entity.6.8.8\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SevenZipSharp, Version=0.64.3890.29348, Culture=neutral, PublicKeyToken=20de82c62b055c88, processorArchitecture=MSIL">
       <HintPath>..\packages\SevenZipSharp.0.64\lib\SevenZipSharp.dll</HintPath>
     </Reference>
@@ -77,6 +80,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UnitTest_ConfigTools.cs" />
+    <Compile Include="UnitTest_GridConfigLocalReadTest.cs" />
     <Compile Include="UnitTest_ConfigModify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,9 +90,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BlueCat.ConfigTools\BlueCat.ConfigTools.csproj">
+      <Project>{87a08f46-e1cc-4245-919c-ff59cbb79cb1}</Project>
+      <Name>BlueCat.ConfigTools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BlueCat.DAL\BlueCat.DAL.csproj">
       <Project>{0FC9194C-9654-4B16-8BA1-E2443B31191D}</Project>
       <Name>BlueCat.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlueCat.Tools\BlueCat.Tools.csproj">
+      <Project>{aa11893e-a3b4-4b69-a80e-1601d58ab33e}</Project>
+      <Name>BlueCat.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
