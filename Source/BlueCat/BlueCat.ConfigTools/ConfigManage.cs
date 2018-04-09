@@ -96,6 +96,16 @@ namespace BlueCat.ConfigTools
         }
 
         /// <summary>
+        /// 保存修改到数据库
+        /// </summary>
+        public static void SaveConfigInfoChanges2DB(yh_tclientconfig data)
+        {
+            _mySQL.yh_tclientconfig.Attach(data);
+            _mySQL.Entry(data).State = System.Data.Entity.EntityState.Modified;
+            _mySQL.SaveChanges();
+        }
+
+        /// <summary>
         /// 从数据字符串获取文件
         /// </summary>
         /// <param name="dbData"></param>
@@ -107,17 +117,73 @@ namespace BlueCat.ConfigTools
         }
 
         /// <summary>
+        /// 从配置文件获取字符串
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static string GetDbDataFromConfigFile(string filePath)
+        {
+            byte[] dbBytes = FileConvertor.File2Bytes(filePath);
+            return Convert.ToBase64String(dbBytes);
+        }
+
+        /// <summary>
         /// 从压缩文件中解压并反序列化配置类
         /// </summary>
         /// <param name="zipFilePath"></param>
         /// <returns></returns>
-        public static GridLayoutInfo GetGridConfigEntityFromZipFile(string zipFilePath)
+        public static GridLayoutInfo GetGridConfigEntityFromZipFile(string zipFilePath, string decompressPath)
         {
-            string decompressFile = Path.Combine(_tempWorkPath, "Decompress");
-            FileConvertor.SevenZipDecompress(zipFilePath, decompressFile);
-             decompressFile = Path.Combine(decompressFile, "GridLayoutInfo.xml");
-            GridLayoutInfo config = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(decompressFile);
+            //string decompressFile = Path.Combine(_tempWorkPath, "Decompress");
+            FileConvertor.SevenZipDecompress(zipFilePath, decompressPath);
+            decompressPath = Path.Combine(decompressPath, "GridLayoutInfo.xml");
+            GridLayoutInfo config = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(decompressPath);
             return config;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conConfig">数据库连接配置信息</param>
+        public static void ModifyServerConfig(string conConfig)
+        {
+            string workPath = Path.Combine(Environment.CurrentDirectory, "ConfigManageTempWork");
+            string zipPath = Path.Combine(workPath, "Compress");
+            string serverZip = Path.Combine(zipPath, "serverData.7z");
+            string localZip = Path.Combine(zipPath, "localData.7z");
+            string deZipPath = Path.Combine(workPath, "Decompress");
+            string taskConfig = Path.Combine(workPath, "TaskConfig", "ConfigTasks.json");
+
+            _mySQL.Database.Connection.ConnectionString = conConfig;
+
+            //从数据库获取配置信息
+            List<yh_tclientconfig> configs = GetServerConfigInfo(10005, "0", "OPLUS_20171130B");
+
+            //解析数据库信息生成压缩文件
+            GetConfigFileFromDbData(configs[0].config_info, Path.Combine(zipPath, "serverData.7z"));
+
+            //解压文件并获取表格配置信息
+            GridLayoutInfo config = GetGridConfigEntityFromZipFile(serverZip, deZipPath);
+
+            //从json配置中生成修改任务
+            GridConfigModifyTask task = GetTask(taskConfig);
+            task.TaskParam.GridConfigInfo = config;
+
+            //执行修改任务
+            task.TaskHandle();
+
+            //压缩文件
+            FileConvertor.SevenZipCompress(deZipPath, localZip);
+
+            //将压缩文件生成字符串流
+            byte[] dbBytes = FileConvertor.File2Bytes(localZip);
+
+            //保存到配置类中
+            string dbStr = Convert.ToBase64String(dbBytes);
+            configs[0].config_info = dbStr;
+
+            //保存到数据库
+            SaveConfigInfoChanges2DB(configs[0]);
         }
     }
 }

@@ -38,7 +38,8 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            view.Name = this.TaskParam.OperateFieldValue;
+                            //view.Name = TaskParam.OperateFieldValue;
+                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, view);
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -61,7 +62,8 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            table.Name = this.TaskParam.OperateFieldValue;
+                            //table.Name = TaskParam.OperateFieldValue;
+                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, table);
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -89,7 +91,8 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            column.FieldName = this.TaskParam.OperateFieldValue;
+                            //column.FieldName = TaskParam.OperateFieldValue;
+                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, column);
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -100,6 +103,28 @@ namespace BlueCat.ConfigTools
                     break;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 设置属性值
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private bool SetPropertyValue(string fieldName, string value, object obj)
+        {
+            try
+            {
+                Type Ts = obj.GetType();
+                object v = Convert.ChangeType(value, Ts.GetProperty(fieldName).PropertyType);
+                Ts.GetProperty(fieldName).SetValue(obj, v, null);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

@@ -70,24 +70,47 @@ namespace BlueCat.Tests
             string desPath = Path.Combine(_tempWorkPath, "Compress.7z");
             string taskPath = Path.Combine(_tempWorkPath, "TaskConfig", "ConfigTasks.json");
             string xmlPath = Path.Combine(_tempWorkPath, "Decompress", "GridLayoutInfo.xml");
-            List<yh_tclientconfig> dbconfigs = ConfigManage.GetServerConfigInfo(10003, "0", "OPLUS_20171130C");
+
+            //获取数据库数据
+            List<yh_tclientconfig> dbconfigs = ConfigManage.GetServerConfigInfo(10005, "0", "OPLUS_20171130B");
             if (dbconfigs.Count <= 0)
             {
                 Assert.Fail();
                 return;
             }
 
+            //从字符串获取压缩文件
             ConfigManage.GetConfigFileFromDbData(dbconfigs[0].config_info, desPath);
 
-            GridLayoutInfo info = ConfigManage.GetGridConfigEntityFromZipFile(desPath);
+            //解压文件，并获取配置信息
+            GridLayoutInfo info = ConfigManage.GetGridConfigEntityFromZipFile(desPath, Path.Combine(_tempWorkPath, "Decompress"));
 
-            Assert.IsTrue(info!=null);
+            //Assert.IsTrue(info != null);
 
-            GridConfigModifyTask task = ConfigManage.GetTask(taskPath);
-            task.TaskParam.GridConfigInfo = info;
-            task.TaskHandle();
+            ////修改配置
+            //GridConfigModifyTask task = ConfigManage.GetTask(taskPath);
+            //task.TaskParam.GridConfigInfo = info;
+            //task.TaskHandle();
 
-            FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(info, xmlPath);
+            ////保存修改到配置文件
+            //FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(info, xmlPath);
+
+            ////压缩文件
+            //FileConvertor.SevenZipCompress(Path.Combine(_tempWorkPath, "Decompress"), Path.Combine(_tempWorkPath, "10005.7z"));
+
+            ////从压缩文件获取字符串
+            //byte[] dbBytes = FileConvertor.File2Bytes(Path.Combine(_tempWorkPath, "10005.7z.001"));
+            //string dbStr = Convert.ToBase64String(dbBytes);
+            //dbconfigs[0].config_info = dbStr;
+
+            //ConfigManage.SaveConfigInfoChanges2DB(dbconfigs[0]);
+
+        }
+
+        [TestMethod]
+        public void TestMethod_ModifyServerConfig()
+        {
+            ConfigManage.ModifyServerConfig("server=10.20.31.42;user id=root;password=ziguan.123;persistsecurityinfo=True;database=dbtrade");
         }
     }
 }
