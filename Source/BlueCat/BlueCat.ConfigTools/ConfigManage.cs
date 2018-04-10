@@ -172,10 +172,14 @@ namespace BlueCat.ConfigTools
             //执行修改任务
             task.TaskHandle();
 
+            //将修改保存到文件中
+            FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, Path.Combine(deZipPath, "GridLayoutInfo.xml"));
+
             //压缩文件
             FileConvertor.SevenZipCompress(deZipPath, localZip);
 
             //将压缩文件生成字符串流
+            localZip = localZip + ".001";
             byte[] dbBytes = FileConvertor.File2Bytes(localZip);
 
             //保存到配置类中
