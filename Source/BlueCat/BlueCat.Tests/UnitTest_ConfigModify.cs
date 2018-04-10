@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Autofac;
 using BlueCat.DAL.MySQL1130C;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -51,12 +52,22 @@ namespace BlueCat.Tests
         [TestMethod]
         public void TestMethod_ByteConvertFile()
         {
-            string desPath = Path.Combine(Environment.CurrentDirectory, "Compress", "dest.7z");
+            string desPath = Path.Combine(Environment.CurrentDirectory, "Compress");
             string deCmpPath = Path.Combine(Environment.CurrentDirectory, "DeCompress", "dest1.7z");
-            byte[] fileBytes = File2Bytes(desPath);
-            string byteStr = Convert.ToBase64String(fileBytes);
+            DirectoryInfo tempDat = new DirectoryInfo(desPath);
+            FileInfo[] tempDatFile = null;
+            StringBuilder byteStr = new StringBuilder();
+            if (tempDat.Exists)
+            {
+                tempDatFile = tempDat.GetFiles("*.7z.*");
+                foreach (FileInfo file in tempDatFile)
+                {
+                    byte[] fileBytes = File2Bytes(file.FullName);
+                    byteStr.Append(Convert.ToBase64String(fileBytes));
+                }
+            }
 
-            byte[] deFileBytes = Convert.FromBase64String(byteStr);
+            byte[] deFileBytes = Convert.FromBase64String(byteStr.ToString());
             Bytes2File(deFileBytes, deCmpPath);
         }
 

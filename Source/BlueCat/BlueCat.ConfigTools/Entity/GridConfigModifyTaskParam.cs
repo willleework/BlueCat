@@ -37,6 +37,22 @@ namespace BlueCat.ConfigTools
         public OperateType OperateType { get; set; }
 
         /// <summary>
+        /// 操作
+        /// </summary>
+        public List<Operate> Operates { get; set; }
+
+        /// <summary>
+        /// 配置信息
+        /// </summary>
+        public GridLayoutInfo GridConfigInfo { get; set; }
+    }
+
+    /// <summary>
+    /// 操作明细
+    /// </summary>
+    public class Operate
+    {
+        /// <summary>
         /// 操作列
         /// </summary>
         public string OperateField { get; set; }
@@ -45,10 +61,5 @@ namespace BlueCat.ConfigTools
         /// 操作列目标值
         /// </summary>
         public string OperateFieldValue { get; set; }
-
-        /// <summary>
-        /// 配置信息
-        /// </summary>
-        public GridLayoutInfo GridConfigInfo { get; set; }
     }
 }

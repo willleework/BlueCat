@@ -27,6 +27,7 @@ namespace BlueCat.ConfigTools
             {
                 return false;
             }
+
             switch (TaskParam.KeyField)
             {
                 case "View":
@@ -38,8 +39,11 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            //view.Name = TaskParam.OperateFieldValue;
-                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, view);
+                            foreach (Operate ope in TaskParam.Operates)
+                            {
+                                //view.Name = TaskParam.OperateFieldValue;
+                                SetPropertyValue(ope.OperateField, ope.OperateFieldValue, view);
+                            }
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -62,8 +66,11 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            //table.Name = TaskParam.OperateFieldValue;
-                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, table);
+                            foreach (Operate ope in TaskParam.Operates)
+                            {
+                                //table.Name = TaskParam.OperateFieldValue;
+                                SetPropertyValue(ope.OperateField, ope.OperateFieldValue, table);
+                            }
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -91,8 +98,11 @@ namespace BlueCat.ConfigTools
                         }
                         if (TaskParam.OperateType == OperateType.Modify)
                         {
-                            //column.FieldName = TaskParam.OperateFieldValue;
-                            SetPropertyValue(TaskParam.OperateField, TaskParam.OperateFieldValue, column);
+                            foreach (Operate ope in TaskParam.Operates)
+                            {
+                                //column.FieldName = TaskParam.OperateFieldValue;
+                                SetPropertyValue(ope.OperateField, ope.OperateFieldValue, column);
+                            }
                             return true;
                         }
                         else if (TaskParam.OperateType == OperateType.Delete)
@@ -102,7 +112,7 @@ namespace BlueCat.ConfigTools
                     }
                     break;
             }
-            return false;
+            return true;
         }
 
         /// <summary>

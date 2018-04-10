@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using BlueCat.ConfigTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,16 +21,35 @@ namespace BlueCat.Tests
         [TestMethod]
         public void Test_JsonSerialize()
         {
-            GridConfigModifyTaskParam param = new GridConfigModifyTaskParam()
+            GridConfigModifyTaskParam param1 = new GridConfigModifyTaskParam()
             {
                 View = "挂单",
                 Table = "O.BizControl.Derivative.TableRowEntrustModel",
                 Column = "BatchSerialNo",
                 KeyField = "Column",
-                OperateField  = "Visible",
-                OperateFieldValue = "false",
+                Operates = new List<Operate>()
+                {
+                    new Operate(){ OperateField = "1", OperateFieldValue = "1.2"},
+                    new Operate(){ OperateField = "2", OperateFieldValue ="2.1"}
+                },
                 OperateType = OperateType.Modify
             };
+            GridConfigModifyTaskParam param2 = new GridConfigModifyTaskParam()
+            {
+                View = "挂单",
+                Table = "O.BizControl.Derivative.TableRowEntrustModel",
+                Column = "BatchSerialNo",
+                KeyField = "Column",
+                Operates = new List<Operate>()
+                {
+                    new Operate(){ OperateField = "1", OperateFieldValue = "1.2"},
+                    new Operate(){ OperateField = "2", OperateFieldValue ="2.1"}
+                },
+                OperateType = OperateType.Modify
+            };
+            List<GridConfigModifyTaskParam> param = new List<GridConfigModifyTaskParam>();
+            param.Add(param1);
+            param.Add(param2);
             string obj = JsonConvert.SerializeObject(param);
         }
 

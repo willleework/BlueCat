@@ -110,7 +110,12 @@ namespace BlueCat.Tests
         [TestMethod]
         public void TestMethod_ModifyServerConfig()
         {
-            ConfigManage.ModifyServerConfig("server=10.20.31.42;user id=root;password=ziguan.123;persistsecurityinfo=True;database=dbtrade");
+            string dbConn = "server=10.20.31.42;user id=root;password=ziguan.123;persistsecurityinfo=True;database=dbtrade";
+            string config = "E:\\Work\\Hundsun\\workSource\\配置文件工具\\Ver0.01\\BlueCat\\Source\\BlueCat\\BlueCat.Tests\\bin\\Debug\\ConfigManageTempWork\\TaskConfig\\ConfigTasks.json";
+            int operate_no = 10005;
+            string client_config_type = "0";
+            string sys_version_no = "OPLUS_20171130B";
+            ConfigManage.ModifyServerConfig(dbConn, operate_no, client_config_type, sys_version_no, config);
         }
     }
 }
