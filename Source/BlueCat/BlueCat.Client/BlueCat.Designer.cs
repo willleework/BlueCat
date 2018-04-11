@@ -29,9 +29,14 @@
         private void InitializeComponent()
         {
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolbarStatus = new System.Windows.Forms.ToolStripProgressBar();
             this.inputGroup = new System.Windows.Forms.GroupBox();
             this.tabDataBase = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txt_dbName = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btn_DBReset = new System.Windows.Forms.Button();
             this.btn_DBSetting = new System.Windows.Forms.Button();
             this.txt_dbpass = new System.Windows.Forms.TextBox();
             this.txt_dbuser = new System.Windows.Forms.TextBox();
@@ -42,6 +47,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txt_dbip = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btn_SaveLog = new System.Windows.Forms.Button();
+            this.btn_Clear = new System.Windows.Forms.Button();
+            this.btn_Reset = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txt_sys_ver_no_new = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.btn_Modify = new System.Windows.Forms.Button();
             this.btn_cfgFile = new System.Windows.Forms.Button();
             this.txt_cfg = new System.Windows.Forms.TextBox();
@@ -53,10 +64,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txt_operate_no = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.btn_DBReset = new System.Windows.Forms.Button();
-            this.txt_dbName = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.rtb_Monitor = new System.Windows.Forms.RichTextBox();
+            this.statusStrip1.SuspendLayout();
             this.inputGroup.SuspendLayout();
             this.tabDataBase.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -66,18 +75,32 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolbarStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 428);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(35, 17);
+            this.toolStripStatusLabel1.Text = "进度:";
+            // 
+            // toolbarStatus
+            // 
+            this.toolbarStatus.Name = "toolbarStatus";
+            this.toolbarStatus.Size = new System.Drawing.Size(740, 16);
+            // 
             // inputGroup
             // 
             this.inputGroup.Controls.Add(this.tabDataBase);
             this.inputGroup.Location = new System.Drawing.Point(12, 12);
             this.inputGroup.Name = "inputGroup";
-            this.inputGroup.Size = new System.Drawing.Size(221, 413);
+            this.inputGroup.Size = new System.Drawing.Size(235, 413);
             this.inputGroup.TabIndex = 1;
             this.inputGroup.TabStop = false;
             this.inputGroup.Text = "参数";
@@ -90,7 +113,7 @@
             this.tabDataBase.Location = new System.Drawing.Point(3, 17);
             this.tabDataBase.Name = "tabDataBase";
             this.tabDataBase.SelectedIndex = 0;
-            this.tabDataBase.Size = new System.Drawing.Size(215, 393);
+            this.tabDataBase.Size = new System.Drawing.Size(229, 393);
             this.tabDataBase.TabIndex = 0;
             // 
             // tabPage1
@@ -110,10 +133,36 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(207, 367);
+            this.tabPage1.Size = new System.Drawing.Size(221, 367);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "数据库";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // txt_dbName
+            // 
+            this.txt_dbName.Location = new System.Drawing.Point(68, 157);
+            this.txt_dbName.Name = "txt_dbName";
+            this.txt_dbName.Size = new System.Drawing.Size(117, 21);
+            this.txt_dbName.TabIndex = 11;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 160);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(53, 12);
+            this.label9.TabIndex = 10;
+            this.label9.Text = "数据库：";
+            // 
+            // btn_DBReset
+            // 
+            this.btn_DBReset.Location = new System.Drawing.Point(110, 213);
+            this.btn_DBReset.Name = "btn_DBReset";
+            this.btn_DBReset.Size = new System.Drawing.Size(75, 23);
+            this.btn_DBReset.TabIndex = 9;
+            this.btn_DBReset.Text = "重置";
+            this.btn_DBReset.UseVisualStyleBackColor = true;
+            this.btn_DBReset.Click += new System.EventHandler(this.btn_DBReset_Click);
             // 
             // btn_DBSetting
             // 
@@ -131,7 +180,6 @@
             this.txt_dbpass.Name = "txt_dbpass";
             this.txt_dbpass.Size = new System.Drawing.Size(117, 21);
             this.txt_dbpass.TabIndex = 7;
-            this.txt_dbpass.Text = "ziguan.123";
             // 
             // txt_dbuser
             // 
@@ -139,7 +187,6 @@
             this.txt_dbuser.Name = "txt_dbuser";
             this.txt_dbuser.Size = new System.Drawing.Size(117, 21);
             this.txt_dbuser.TabIndex = 6;
-            this.txt_dbuser.Text = "root";
             // 
             // txt_dbpot
             // 
@@ -190,10 +237,15 @@
             this.txt_dbip.Name = "txt_dbip";
             this.txt_dbip.Size = new System.Drawing.Size(117, 21);
             this.txt_dbip.TabIndex = 0;
-            this.txt_dbip.Text = "10.20.31.42";
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btn_SaveLog);
+            this.tabPage2.Controls.Add(this.btn_Clear);
+            this.tabPage2.Controls.Add(this.btn_Reset);
+            this.tabPage2.Controls.Add(this.label11);
+            this.tabPage2.Controls.Add(this.txt_sys_ver_no_new);
+            this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.btn_Modify);
             this.tabPage2.Controls.Add(this.btn_cfgFile);
             this.tabPage2.Controls.Add(this.txt_cfg);
@@ -207,16 +259,74 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(207, 367);
+            this.tabPage2.Size = new System.Drawing.Size(221, 367);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "配置修改";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // btn_SaveLog
+            // 
+            this.btn_SaveLog.Location = new System.Drawing.Point(13, 334);
+            this.btn_SaveLog.Name = "btn_SaveLog";
+            this.btn_SaveLog.Size = new System.Drawing.Size(90, 23);
+            this.btn_SaveLog.TabIndex = 23;
+            this.btn_SaveLog.Text = "保存运行信息";
+            this.btn_SaveLog.UseVisualStyleBackColor = true;
+            this.btn_SaveLog.Click += new System.EventHandler(this.btn_SaveLog_Click);
+            // 
+            // btn_Clear
+            // 
+            this.btn_Clear.Location = new System.Drawing.Point(111, 334);
+            this.btn_Clear.Name = "btn_Clear";
+            this.btn_Clear.Size = new System.Drawing.Size(90, 23);
+            this.btn_Clear.TabIndex = 22;
+            this.btn_Clear.Text = "清空运行信息";
+            this.btn_Clear.UseVisualStyleBackColor = true;
+            this.btn_Clear.Click += new System.EventHandler(this.btn_Clear_Click);
+            // 
+            // btn_Reset
+            // 
+            this.btn_Reset.Location = new System.Drawing.Point(111, 305);
+            this.btn_Reset.Name = "btn_Reset";
+            this.btn_Reset.Size = new System.Drawing.Size(90, 23);
+            this.btn_Reset.TabIndex = 21;
+            this.btn_Reset.Text = "重置";
+            this.btn_Reset.UseVisualStyleBackColor = true;
+            this.btn_Reset.Click += new System.EventHandler(this.btn_Reset_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("宋体", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.label11.Location = new System.Drawing.Point(11, 146);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(203, 11);
+            this.label11.TabIndex = 20;
+            this.label11.Text = "红色版本为当前版本，蓝色为待升级版本";
+            // 
+            // txt_sys_ver_no_new
+            // 
+            this.txt_sys_ver_no_new.Location = new System.Drawing.Point(111, 118);
+            this.txt_sys_ver_no_new.Name = "txt_sys_ver_no_new";
+            this.txt_sys_ver_no_new.Size = new System.Drawing.Size(104, 21);
+            this.txt_sys_ver_no_new.TabIndex = 19;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.ForeColor = System.Drawing.Color.Blue;
+            this.label10.Location = new System.Drawing.Point(13, 121);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(101, 12);
+            this.label10.TabIndex = 18;
+            this.label10.Text = "sys_version_no：";
+            // 
             // btn_Modify
             // 
-            this.btn_Modify.Location = new System.Drawing.Point(126, 322);
+            this.btn_Modify.Location = new System.Drawing.Point(111, 276);
             this.btn_Modify.Name = "btn_Modify";
-            this.btn_Modify.Size = new System.Drawing.Size(75, 23);
+            this.btn_Modify.Size = new System.Drawing.Size(90, 23);
             this.btn_Modify.TabIndex = 17;
             this.btn_Modify.Text = "修改";
             this.btn_Modify.UseVisualStyleBackColor = true;
@@ -224,7 +334,7 @@
             // 
             // btn_cfgFile
             // 
-            this.btn_cfgFile.Location = new System.Drawing.Point(167, 153);
+            this.btn_cfgFile.Location = new System.Drawing.Point(167, 198);
             this.btn_cfgFile.Name = "btn_cfgFile";
             this.btn_cfgFile.Size = new System.Drawing.Size(34, 23);
             this.btn_cfgFile.TabIndex = 16;
@@ -234,33 +344,31 @@
             // 
             // txt_cfg
             // 
-            this.txt_cfg.Location = new System.Drawing.Point(13, 154);
+            this.txt_cfg.Location = new System.Drawing.Point(13, 199);
             this.txt_cfg.Name = "txt_cfg";
             this.txt_cfg.Size = new System.Drawing.Size(147, 21);
             this.txt_cfg.TabIndex = 15;
-            this.txt_cfg.Text = "E:\\Work\\Hundsun\\workSource\\配置文件工具\\Ver0.01\\BlueCat\\Source\\BlueCat\\BlueCat.Tests\\bi" +
-    "n\\Debug\\ConfigManageTempWork\\TaskConfig\\ConfigTasks.json";
             // 
             // txt_sys_version_no
             // 
             this.txt_sys_version_no.Location = new System.Drawing.Point(111, 90);
             this.txt_sys_version_no.Name = "txt_sys_version_no";
-            this.txt_sys_version_no.Size = new System.Drawing.Size(90, 21);
+            this.txt_sys_version_no.Size = new System.Drawing.Size(104, 21);
             this.txt_sys_version_no.TabIndex = 14;
-            this.txt_sys_version_no.Text = "OPLUS_20171130B";
             // 
             // txt_client_config_type
             // 
             this.txt_client_config_type.Location = new System.Drawing.Point(136, 53);
             this.txt_client_config_type.Name = "txt_client_config_type";
-            this.txt_client_config_type.Size = new System.Drawing.Size(65, 21);
+            this.txt_client_config_type.ReadOnly = true;
+            this.txt_client_config_type.Size = new System.Drawing.Size(79, 21);
             this.txt_client_config_type.TabIndex = 13;
             this.txt_client_config_type.Text = "0";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 127);
+            this.label5.Location = new System.Drawing.Point(11, 172);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(65, 12);
             this.label5.TabIndex = 12;
@@ -269,6 +377,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.Red;
             this.label6.Location = new System.Drawing.Point(13, 93);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(101, 12);
@@ -297,9 +406,8 @@
             // 
             this.txt_operate_no.Location = new System.Drawing.Point(84, 16);
             this.txt_operate_no.Name = "txt_operate_no";
-            this.txt_operate_no.Size = new System.Drawing.Size(117, 21);
+            this.txt_operate_no.Size = new System.Drawing.Size(131, 21);
             this.txt_operate_no.TabIndex = 8;
-            this.txt_operate_no.Text = "10005";
             // 
             // groupBox2
             // 
@@ -311,40 +419,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "运行信息";
             // 
-            // btn_DBReset
-            // 
-            this.btn_DBReset.Location = new System.Drawing.Point(110, 213);
-            this.btn_DBReset.Name = "btn_DBReset";
-            this.btn_DBReset.Size = new System.Drawing.Size(75, 23);
-            this.btn_DBReset.TabIndex = 9;
-            this.btn_DBReset.Text = "重置";
-            this.btn_DBReset.UseVisualStyleBackColor = true;
-            this.btn_DBReset.Click += new System.EventHandler(this.btn_DBReset_Click);
-            // 
-            // txt_dbName
-            // 
-            this.txt_dbName.Location = new System.Drawing.Point(68, 157);
-            this.txt_dbName.Name = "txt_dbName";
-            this.txt_dbName.Size = new System.Drawing.Size(117, 21);
-            this.txt_dbName.TabIndex = 11;
-            this.txt_dbName.Text = "dbtrade";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 160);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(53, 12);
-            this.label9.TabIndex = 10;
-            this.label9.Text = "数据库：";
-            // 
             // rtb_Monitor
             // 
+            this.rtb_Monitor.BackColor = System.Drawing.Color.Black;
+            this.rtb_Monitor.ForeColor = System.Drawing.Color.White;
             this.rtb_Monitor.Location = new System.Drawing.Point(6, 29);
             this.rtb_Monitor.Name = "rtb_Monitor";
-            this.rtb_Monitor.Size = new System.Drawing.Size(507, 381);
+            this.rtb_Monitor.ReadOnly = true;
+            this.rtb_Monitor.Size = new System.Drawing.Size(507, 377);
             this.rtb_Monitor.TabIndex = 0;
             this.rtb_Monitor.Text = "";
+            this.rtb_Monitor.TextChanged += new System.EventHandler(this.rtb_Monitor_TextChanged);
             // 
             // BlueCat
             // 
@@ -357,6 +442,9 @@
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Name = "BlueCat";
             this.Text = "BlueCat";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BlueCat_FormClosing);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.inputGroup.ResumeLayout(false);
             this.tabDataBase.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -400,6 +488,14 @@
         private System.Windows.Forms.TextBox txt_dbName;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.RichTextBox rtb_Monitor;
+        private System.Windows.Forms.TextBox txt_sys_ver_no_new;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ToolStripProgressBar toolbarStatus;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Button btn_Reset;
+        private System.Windows.Forms.Button btn_Clear;
+        private System.Windows.Forms.Button btn_SaveLog;
     }
 }
 

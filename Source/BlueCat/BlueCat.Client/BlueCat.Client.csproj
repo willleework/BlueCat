@@ -68,6 +68,7 @@
     <Compile Include="BlueCat.Designer.cs">
       <DependentUpon>BlueCat.cs</DependentUpon>
     </Compile>
+    <Compile Include="LocalParam.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="BlueCat.resx">
@@ -101,6 +102,10 @@
     <ProjectReference Include="..\BlueCat.ConfigTools\BlueCat.ConfigTools.csproj">
       <Project>{87a08f46-e1cc-4245-919c-ff59cbb79cb1}</Project>
       <Name>BlueCat.ConfigTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlueCat.Tools\BlueCat.Tools.csproj">
+      <Project>{aa11893e-a3b4-4b69-a80e-1601d58ab33e}</Project>
+      <Name>BlueCat.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
