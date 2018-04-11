@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<LocalParam xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DbServerIP>10.20.31.42</DbServerIP>
+  <DbServerPot />
+  <DbServerUser>root</DbServerUser>
+  <DbServerPss>ziguan.123</DbServerPss>
+  <DbName>dbtrade</DbName>
+  <LastOperateNo>10005,  10003</LastOperateNo>
+  <LastClientConfigType>0</LastClientConfigType>
+  <LastSysVersionNo>OPLUS_20171130B</LastSysVersionNo>
+  <NextSysVersionNo>OPLUS_20171130T</NextSysVersionNo>
+  <ConfigPath>E:\Work\Hundsun\workSource\配置文件工具\Ver0.01\BlueCat\Source\BlueCat\BlueCat.Tests\bin\Debug\ConfigManageTempWork\TaskConfig\ConfigTasks.json</ConfigPath>
+</LocalParam>

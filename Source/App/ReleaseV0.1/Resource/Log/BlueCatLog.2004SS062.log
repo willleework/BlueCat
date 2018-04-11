@@ -1,0 +1,27 @@
+【19:04:01-329】 开始执行修改：操作员序号【10005】;系统版本【OPLUS_20171130B】；待更新系统版本【OPLUS_20171130Y】
+【19:04:01-377】 配置工作路径成功
+【19:04:01-388】 创建工作路径成功
+【19:04:04-875】 从数据库获取到配置数据
+【19:04:04-881】 解析数据库信息生成压缩文件
+【19:04:05-268】 解压文件并获取表格配置信息
+【19:04:05-585】 从json配置中生成修改任务
+【19:04:05-586】 执行修改任务
+【19:04:05-588】 开始执行任务：930c2d2a-912b-4d50-a172-24aba39b8b5d， 修改视图：FutureTrade_MultiFundGroup，修改主键：Column
+【19:04:05-595】 完成任务：930c2d2a-912b-4d50-a172-24aba39b8b5d
+【19:04:05-597】 开始执行任务：19b51f01-2bbc-4081-bfeb-43ca997f42f3， 修改视图：FutureTrade_MultiFundGroup，修改主键：Column
+【19:04:05-598】 完成任务：19b51f01-2bbc-4081-bfeb-43ca997f42f3
+【19:04:05-599】 将修改保存到文件中
+【19:04:05-610】 压缩文件
+【19:04:05-759】 保存信息到数据库
+【19:04:06-139】 修改文件发生异常，错误信息如下：
+【19:04:06-168】 
+[异常信息]：An error occurred while updating the entries. See the inner exception for details.;
+[错误源]:EntityFramework;
+[内部错误]:->An error occurred while updating the entries. See the inner exception for details.->Duplicate entry '300001-10005-OPLUS_20171130Y-0-1' for key 'PRIMARY';
+[堆栈信息]:   在 System.Data.Entity.Internal.InternalContext.SaveChanges()
+   在 System.Data.Entity.Internal.LazyInternalContext.SaveChanges()
+   在 System.Data.Entity.DbContext.SaveChanges()
+   在 BlueCat.ConfigTools.ConfigManage.AddConfigInfo2DB(List`1 datas) 位置 E:\Work\Hundsun\workSource\配置文件工具\Ver0.01\BlueCat\Source\BlueCat\BlueCat.ConfigTools\ConfigManage.cs:行号 139
+   在 BlueCat.ConfigTools.ConfigManage.ModifyServerConfig(String conConfig, Int32 operate_no, String client_config_type, String sys_version_no, String sys_version_no_new, String taskConfig) 位置 E:\Work\Hundsun\workSource\配置文件工具\Ver0.01\BlueCat\Source\BlueCat\BlueCat.ConfigTools\ConfigManage.cs:行号 368
+【19:04:06-174】 ------------------------------------------------
+
