@@ -3,6 +3,7 @@ using BlueCat.Tools.FileTools;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,32 +11,18 @@ using System.Threading.Tasks;
 
 namespace BlueCat.ConfigTools
 {
-    public class ConfigManageEventArgs
-    {
-        /// <summary>
-        /// 消息
-        /// </summary>
-        public string Message { get; set; }
-
-        public ConfigManageEventArgs(string message)
-        {
-            Message = message;
-        }
-    }
     public class ConfigManage
     {
-        public static EventHandler<ConfigManageEventArgs> MesageEvent;
         #region 变量
         /// <summary>
         /// 数据库
         /// </summary>
-        private static MySQL1130C _mySQL = new MySQL1130C();
+        private static string _dbConnect = string.Empty;
 
         /// <summary>
-        /// 临时工作目录
+        /// 消息事件
         /// </summary>
-        private static string _tempWorkPath = "F:\\ConfigTest";
-
+        public static EventHandler<ConfigManageEventArgs> MesageEvent;
         #endregion
 
         /// <summary>
@@ -112,7 +99,11 @@ namespace BlueCat.ConfigTools
         /// <returns></returns>
         public static List<yh_tclientconfig> GetServerConfigInfo(int operator_no, string client_config_type, string sys_version_no)
         {
-            return _mySQL.yh_tclientconfig.Where(p => p.operator_no == operator_no && p.client_config_type == client_config_type && p.sys_version_no == sys_version_no ).ToList();
+            using (MySQL1130C _mySQL = new MySQL1130C())
+            {
+                _mySQL.Database.Connection.ConnectionString = _dbConnect;
+                return _mySQL.yh_tclientconfig.Where(p => p.operator_no == operator_no && p.client_config_type == client_config_type && p.sys_version_no == sys_version_no).ToList();
+            }
         }
 
         /// <summary>
@@ -120,12 +111,17 @@ namespace BlueCat.ConfigTools
         /// </summary>
         public static void SaveConfigInfoChanges2DB(List<yh_tclientconfig> datas)
         {
-            foreach (yh_tclientconfig config in datas)
+            using (MySQL1130C _mySQL = new MySQL1130C())
             {
-                _mySQL.yh_tclientconfig.Attach(config);
-                _mySQL.Entry<yh_tclientconfig>(config).State = System.Data.Entity.EntityState.Modified;
+                _mySQL.Database.Connection.ConnectionString = _dbConnect;
+                foreach (yh_tclientconfig config in datas)
+                {
+                    _mySQL.yh_tclientconfig.Attach(config);
+                    _mySQL.Entry<yh_tclientconfig>(config).State = System.Data.Entity.EntityState.Modified;
+                }
+
+                _mySQL.SaveChanges();
             }
-            _mySQL.SaveChanges();
         }
 
         /// <summary>
@@ -133,12 +129,15 @@ namespace BlueCat.ConfigTools
         /// </summary>
         public static void AddConfigInfo2DB(List<yh_tclientconfig> datas)
         {
-            foreach (yh_tclientconfig config in datas)
+            using (MySQL1130C _mySQL = new MySQL1130C())
             {
-                _mySQL.yh_tclientconfig.Add(config);
-
+                _mySQL.Database.Connection.ConnectionString = _dbConnect;
+                foreach (yh_tclientconfig config in datas)
+                {
+                    _mySQL.yh_tclientconfig.Add(config);
+                }
+                _mySQL.SaveChanges();
             }
-            _mySQL.SaveChanges();
         }
 
         /// <summary>
@@ -170,9 +169,6 @@ namespace BlueCat.ConfigTools
         /// <returns></returns>
         public static GridLayoutInfo GetGridConfigEntityFromZipFile(string zipFilePath, string decompressPath)
         {
-            //string decompressFile = Path.Combine(_tempWorkPath, "Decompress");
-            FileConvertor.SevenZipDecompress(zipFilePath, decompressPath);
-            decompressPath = Path.Combine(decompressPath, "GridLayoutInfo.xml");
             GridLayoutInfo config = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(decompressPath);
             return config;
         }
@@ -180,14 +176,16 @@ namespace BlueCat.ConfigTools
         /// <summary>
         /// 将配置保存到实体类
         /// </summary>
-        private static void SaveConfigInfoToModels(List<yh_tclientconfig> configs, string localZip)
+        private static void SaveConfigInfoToModels(List<yh_tclientconfig> configs, string localZip, string sys_version_no_new)
         {
             string cmpFileName;
+            int serial_no = 1;
             for (int i = 0; i < configs.Count; i++)
             {
-                cmpFileName = localZip + "." + (i + 1).ToString().PadLeft(3, '0');
+                cmpFileName = localZip + "." + serial_no.ToString().PadLeft(3, '0');
                 if (!File.Exists(cmpFileName))
                 {
+                    configs.RemoveAt(i);
                     continue;
                 }
                 //将压缩文件生成字符串流
@@ -196,30 +194,83 @@ namespace BlueCat.ConfigTools
                 //保存到配置类中
                 string dbStr = Convert.ToBase64String(dbBytes);
                 configs[i].config_info = dbStr;
-                configs[i].sys_version_no = "OPLUS_20171130G";
+                configs[i].sys_version_no = sys_version_no_new;
                 configs[i].config_version = 1;
                 configs[i].update_date = int.Parse(DateTime.Now.Date.ToString("yyyymmdd"));
                 configs[i].update_time = int.Parse(DateTime.Now.ToString("HHMMss"));
-                configs[i].serial_no = 1;
+                configs[i].serial_no = serial_no++;
             }
         }
 
         /// <summary>
-        /// 
+        /// 潜复制
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static yh_tclientconfig ShallowCoty(yh_tclientconfig config)
+        {
+            return new yh_tclientconfig()
+            {
+                company_id = config.company_id,
+                config_version = config.config_version,
+                client_config_type = config.client_config_type,
+                config_info = config.config_info,
+                operator_no = config.operator_no,
+                serial_no = config.serial_no,
+                sys_version_no = config.sys_version_no,
+                update_date = config.update_date,
+                update_time = config.update_time
+            };
+        }
+
+        /// <summary>
+        /// 异常处理
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        public static string ExceptionHandle(Exception ex)
+        {
+            StringBuilder innerExp = new StringBuilder();
+            Exception temp = ex;
+            while (temp.InnerException != null)
+            {
+                temp = temp.InnerException;
+                innerExp.Append(string.Format("->{0}", temp.Message));
+            }
+            return string.Format("{0}[异常信息]：{1};\r\n[错误源]:{2};\r\n[内部错误]:{3};\r\n[堆栈信息]:{4}", Environment.NewLine, ex.Message, ex.Source, innerExp.ToString(), ex.StackTrace);
+        }
+
+        /// <summary>
+        /// 输出错误结束符
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="process"></param>
+        private static void PrintErrEndLine(string info, int process)
+        {
+            MesageEvent?.Invoke(null, new ConfigManageEventArgs(info, process));
+            MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+            MesageEvent?.Invoke(null, new ConfigManageEventArgs(""));
+        }
+
+
+        /// <summary>
+        /// 配置文件更新
         /// </summary>
         /// <param name="conConfig">数据库连接配置信息</param>
-        public static void ModifyServerConfig(string conConfig, int operate_no, string client_config_type, string sys_version_no, string taskConfig)
+        public static void ModifyServerConfig(string conConfig, int operate_no, string client_config_type, string sys_version_no, string sys_version_no_new, string taskConfig)
         {
             try
             {
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行修改：操作员序号【{0}】;系统版本【{1}】；待更新系统版本【{2}】", operate_no, sys_version_no, sys_version_no_new)));
                 string workPath = Path.Combine(Environment.CurrentDirectory, "ConfigManageTempWork");
                 string zipPath = Path.Combine(workPath, "Compress");
                 string serverZip = Path.Combine(zipPath, "serverData.7z.001");
                 string localZip = Path.Combine(zipPath, "localData.7z");
                 string deZipPath = Path.Combine(workPath, "Decompress");
                 //string taskConfig = Path.Combine(workPath, "TaskConfig", "ConfigTasks.json");
+                _dbConnect = conConfig;
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("配置工作路径成功"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("配置工作路径成功", 5));
 
                 if (Directory.Exists(zipPath))
                 {
@@ -233,23 +284,23 @@ namespace BlueCat.ConfigTools
                 }
                 Directory.CreateDirectory(deZipPath);
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("创建工作路径成功"));
-
-                _mySQL.Database.Connection.ConnectionString = conConfig;
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("创建工作路径成功", 10));
 
                 //从数据库获取配置信息
                 List<yh_tclientconfig> configs = GetServerConfigInfo(operate_no, client_config_type, sys_version_no);
                 if (configs.Count <= 0)
                 {
+                    PrintErrEndLine("数据库查询不到相关配置信息", 0);
                     return;
                 }
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从数据库获取到配置数据"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从数据库获取到配置数据", 30));
 
                 //筛选出最大版本号（config_version）的配置信息并按照文件序号排序（serial_no压缩包顺序）
                 int config_version = configs.Max(p => p.config_version);
                 configs = configs.Where(p => p.config_version == config_version).ToList().OrderBy(p => p.serial_no).ToList();
-
+                //后续要做新增操作，此处拷贝一份作为插入数据
+                configs = configs.Select(p => ShallowCoty(p)).ToList();
                 //解析数据库信息生成压缩文件
                 string cmpFileName;
                 for (int i = 0; i < configs.Count; i++)
@@ -257,16 +308,27 @@ namespace BlueCat.ConfigTools
                     cmpFileName = "serverData.7z." + (i + 1).ToString().PadLeft(3, '0');
                     GetConfigFileFromDbData(configs[i].config_info, Path.Combine(zipPath, cmpFileName));
                 }
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件", 35));
 
                 //解压文件并获取表格配置信息
-                GridLayoutInfo config = GetGridConfigEntityFromZipFile(serverZip, deZipPath);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件并获取表格配置信息"));
+                FileConvertor.SevenZipDecompress(serverZip, deZipPath);
+                string decompressPath = Path.Combine(deZipPath, "GridLayoutInfo.xml");
+                if (!File.Exists(decompressPath))
+                {
+                    PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件，无需修改", 0);
+                    return;
+                }
+                GridLayoutInfo config = GetGridConfigEntityFromZipFile(serverZip, decompressPath);
+                if (config == null)
+                {
+                    PrintErrEndLine("从配置文件生成表格配置信息失败", 0);
+                    return;
+                }
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件并获取表格配置信息", 40));
 
                 //从json配置中生成修改任务
                 List<GridConfigModifyTask> tasks = GetTask(taskConfig, config);
-                //task.TaskParam.GridConfigInfo = config;
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从json配置中生成修改任务"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从json配置中生成修改任务", 45));
 
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("执行修改任务"));
                 //任务处理
@@ -277,28 +339,63 @@ namespace BlueCat.ConfigTools
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", task.TaskID)));
                 }
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中"));
+                //此处不需要进行并行处理，简单foreach循环效率要比并行效率高
+                //Parallel.ForEach(tasks, p => 
+                //{
+                //    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行任务：{0}， 修改视图：{1}，修改主键：{2}", p.TaskID, p.TaskParam.View, p.TaskParam.KeyField)));
+                //    p.TaskHandle();
+                //    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", p.TaskID)));
+                //});
+
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中", 60));
                 //将修改保存到文件中
                 FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, Path.Combine(deZipPath, "GridLayoutInfo.xml"));
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 65));
                 //压缩文件
                 FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
 
-                SaveConfigInfoToModels(configs, localZip);
+                SaveConfigInfoToModels(configs, localZip, sys_version_no_new);
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("保存信息到数据库"));
+                if (configs.Count <= 0)
+                {
+                    PrintErrEndLine("没有需要保存的数据", 0);
+                    return;
+                }
+
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("保存信息到数据库", 70));
                 //保存到数据库
                 AddConfigInfo2DB(configs);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功"));
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", 100));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
             }
             catch (Exception ex)
             {
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改文件发生异常"));
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs(ex.Message+";"+ex.Source));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改文件发生异常，错误信息如下："));
+                PrintErrEndLine(ExceptionHandle(ex), 0);
             }
         }
 
+    }
+
+    public class ConfigManageEventArgs
+    {
+        /// <summary>
+        /// 消息
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
+        /// 进度
+        /// </summary>
+        [DefaultValue(-1)]
+        public int ProgressIndex { get; set; }
+
+        public ConfigManageEventArgs(string message, int progress = -1)
+        {
+            Message = message;
+            ProgressIndex = progress;
+        }
     }
 }
