@@ -76,12 +76,24 @@ namespace BlueCat.Tests
             }
             List<pub_tstockinfo> stocks = dbtrade.pub_tstockinfo.Where(p=>markets.Contains(p.market_no)).ToList();
             int count = stocks.Count();
-            Parallel.ForEach(Partitioner.Create(0, count, 1000), p => {
+            Parallel.ForEach(Partitioner.Create(0, count, 1000), p =>
+            {
                 for (int m = p.Item1; m < p.Item2; m++)
                 {
-                    dic_stocks[stocks[m].market_no].Add(stocks[m]);
+                    try
+                    {
+                        dic_stocks[stocks[m].market_no].Add(stocks[m]);
+                    }
+                    catch (Exception ex)
+                    {
+                        ;
+                    }
                 }
             });
+            //for (int j = 0; j < count; j++)
+            //{
+            //    dic_stocks[stocks[j].market_no].Add(stocks[j]);
+            //}
         }
     }
 }
