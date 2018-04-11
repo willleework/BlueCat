@@ -1,4 +1,4 @@
-﻿// 为模型“E:\Work\Hundsun\workSource\配置文件工具\Ver0.01\BlueCat\Source\BlueCat\BlueCat.DAL\MySQL1130C\MySQL1130CDBContext.edmx”启用了 T4 代码生成。
+﻿// 为模型“E:\Work\工作\配置工具\BlueCat\Source\BlueCat\BlueCat.DAL\MySQL1130C\MySQL1130CDBContext.edmx”启用了 T4 代码生成。
 // 要启用旧代码生成功能，请将“代码生成策略”设计器属性的值
 // 更改为“旧的 ObjectContext”。当在设计器中打开该模型时，此属性会出现在
 // “属性”窗口中。

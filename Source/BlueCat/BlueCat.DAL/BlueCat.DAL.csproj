@@ -70,6 +70,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MySQL1130CDBContext.edmx</DependentUpon>
     </Compile>
+    <Compile Include="MySQL1130C\pub_tfuturearbitrageinfo.cs">
+      <DependentUpon>MySQL1130CDBContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL1130C\pub_tfuturekind.cs">
+      <DependentUpon>MySQL1130CDBContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL1130C\pub_tfuturesinfo.cs">
+      <DependentUpon>MySQL1130CDBContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL1130C\pub_tstockinfo.cs">
+      <DependentUpon>MySQL1130CDBContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="MySQL1130C\yh_tclientconfig.cs">
       <DependentUpon>MySQL1130CDBContext.tt</DependentUpon>
     </Compile>
@@ -89,6 +101,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="MySQL1130C\MySQL1130CDBContext.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>MySQL1130CDBContext.edmx</DependentUpon>
@@ -99,9 +114,6 @@
       <DependentUpon>MySQL1130CDBContext.edmx</DependentUpon>
       <LastGenOutput>MySQL1130CDBContext.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

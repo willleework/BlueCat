@@ -25,6 +25,10 @@ namespace BlueCat.DAL.MySQL1130C
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<pub_tfuturearbitrageinfo> pub_tfuturearbitrageinfo { get; set; }
+        public virtual DbSet<pub_tfuturekind> pub_tfuturekind { get; set; }
+        public virtual DbSet<pub_tfuturesinfo> pub_tfuturesinfo { get; set; }
+        public virtual DbSet<pub_tstockinfo> pub_tstockinfo { get; set; }
         public virtual DbSet<yh_tclientconfig> yh_tclientconfig { get; set; }
     }
 }
