@@ -318,6 +318,8 @@ namespace BlueCat.ConfigTools
                     PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件，无需修改", 0);
                     return;
                 }
+
+                #region 修改GridConfig
                 GridLayoutInfo config = GetGridConfigEntityFromZipFile(serverZip, decompressPath);
                 if (config == null)
                 {
@@ -350,12 +352,17 @@ namespace BlueCat.ConfigTools
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中", 60));
                 //将修改保存到文件中
                 FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, Path.Combine(deZipPath, "GridLayoutInfo.xml"));
+                #endregion
+
+                #region 修改行情文件
+
+                #endregion
 
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 65));
                 //压缩文件
                 FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
 
-                SaveConfigInfoToModels(configs, localZip, sys_version_no_new);
+                SaveConfigInfoToModels(configs, localZip, sys_version_no_new); 
 
                 if (configs.Count <= 0)
                 {
@@ -363,7 +370,7 @@ namespace BlueCat.ConfigTools
                     return;
                 }
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("保存信息到数据库", 70));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始保存信息到数据库", 70));
                 //保存到数据库
                 AddConfigInfo2DB(configs);
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", 100));

@@ -29,6 +29,11 @@ namespace BlueCat.TaskManage
         T TaskParam { get; set; }
 
         /// <summary>
+        /// 任务状态
+        /// </summary>
+        TaskResult TaskResult { get; set; }
+
+        /// <summary>
         /// 任务处理
         /// </summary>
         /// <returns></returns>

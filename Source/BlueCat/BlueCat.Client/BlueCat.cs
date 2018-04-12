@@ -180,7 +180,7 @@ namespace BlueCat.Client
         /// <param name="e"></param>
         private void btn_Modify_Click(object sender, EventArgs e)
         {
-            string dbConn = string.Format("server={0};user id={1};password={2};persistsecurityinfo=True;database={3}", _dbip, _dbuser, _dbpass, _dbName);
+            string dbConn = string.Format("server={0};user id={1};password={2};port={3};persistsecurityinfo=True;database={4}", _dbip, _dbuser, _dbpass, _dbpot, _dbName);
             string client_cfig_type = txt_client_config_type.Text;
             string sys_serversion_curr = txt_sys_version_no.Text;
             string sys_ver_no_next = txt_sys_ver_no_new.Text;

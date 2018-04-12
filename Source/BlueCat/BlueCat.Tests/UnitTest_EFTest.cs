@@ -28,8 +28,8 @@ namespace BlueCat.Tests
         private TestContext testContextInstance;
 
         /// <summary>
-        ///获取或设置测试上下文，该上下文提供
-        ///有关当前测试运行及其功能的信息。
+        /// 获取或设置测试上下文，该上下文提供
+        /// 有关当前测试运行及其功能的信息。
         ///</summary>
         public TestContext TestContext
         {
@@ -76,24 +76,34 @@ namespace BlueCat.Tests
             }
             List<pub_tstockinfo> stocks = dbtrade.pub_tstockinfo.Where(p=>markets.Contains(p.market_no)).ToList();
             int count = stocks.Count();
-            Parallel.ForEach(Partitioner.Create(0, count, 1000), p =>
-            {
-                for (int m = p.Item1; m < p.Item2; m++)
-                {
-                    try
-                    {
-                        dic_stocks[stocks[m].market_no].Add(stocks[m]);
-                    }
-                    catch (Exception ex)
-                    {
-                        ;
-                    }
-                }
-            });
+            //Parallel.ForEach(Partitioner.Create(0, count, 1000), p =>
+            //{
+            //    for (int m = p.Item1; m < p.Item2; m++)
+            //    {
+            //        try
+            //        {
+            //            dic_stocks[stocks[m].market_no].Add(stocks[m]);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            ;
+            //        }
+            //    }
+            //});
             //for (int j = 0; j < count; j++)
             //{
             //    dic_stocks[stocks[j].market_no].Add(stocks[j]);
             //}
+
+            Dictionary<int, pub_tstockinfo> StockDicKeyInter = new Dictionary<int, pub_tstockinfo>();
+            Dictionary<string, pub_tstockinfo> StockDicKeyReportMarketNo = new Dictionary<string, pub_tstockinfo>();
+
+            foreach (pub_tstockinfo stock in stocks)
+            {
+                string key = string.Format("{0}_{1}", stock.report_code, stock.market_no);
+                StockDicKeyInter.Add(stock.inter_code, stock);
+                StockDicKeyReportMarketNo.Add(key, stock);
+            }
         }
     }
 }

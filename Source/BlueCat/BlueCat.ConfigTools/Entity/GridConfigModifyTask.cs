@@ -55,7 +55,7 @@ namespace BlueCat.ConfigTools
             {
                 case "View":
                     {
-                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).First();
+                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).FirstOrDefault();
                         if (view == null)
                         {
                             TaskResult = TaskResult.失败;
@@ -85,7 +85,7 @@ namespace BlueCat.ConfigTools
                             TaskResult = TaskResult.失败;
                             return false;
                         }
-                        GridLayoutTableInfo table = view.Tables.Where(p => p.Name.Equals(TaskParam.Table)).First();
+                        GridLayoutTableInfo table = view.Tables.Where(p => p.Name.Equals(TaskParam.Table)).FirstOrDefault();
                         if (table == null)
                         {
                             TaskResult = TaskResult.失败;
@@ -109,19 +109,19 @@ namespace BlueCat.ConfigTools
                     break;
                 case "Column":
                     {
-                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).First();
+                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).FirstOrDefault();
                         if (view == null)
                         {
                             TaskResult = TaskResult.失败;
                             return false;
                         }
-                        GridLayoutTableInfo table = view.Tables.Where(p => p.Name.Equals(TaskParam.Table)).First();
+                        GridLayoutTableInfo table = view.Tables.Where(p => p.Name.Equals(TaskParam.Table)).FirstOrDefault();
                         if (table == null)
                         {
                             TaskResult = TaskResult.失败;
                             return false;
                         }
-                        GridLayoutColumnInfo column = table.Columns.Where(p => p.FieldName.Equals(TaskParam.Column)).First();
+                        GridLayoutColumnInfo column = table.Columns.Where(p => p.FieldName.Equals(TaskParam.Column)).FirstOrDefault();
                         if (column == null)
                         {
                             TaskResult = TaskResult.失败;

@@ -55,6 +55,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MySQL0224G\MySQL0224GContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MySQL0224GContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL0224G\MySQL0224GContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MySQL0224GContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL0224G\MySQL0224GContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MySQL0224GContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="MySQL0224G\yh_tclientconfig.cs">
+      <DependentUpon>MySQL0224GContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="MySQL1130C\MySQL1130CDBContext.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -95,6 +113,13 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MySQL1130CDBContext.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <EntityDeploy Include="MySQL0224G\MySQL0224GContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MySQL0224GContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="MySQL0224G\MySQL0224GContext.edmx.diagram">
+      <DependentUpon>MySQL0224GContext.edmx</DependentUpon>
+    </None>
     <None Include="MySQL1130C\MySQL1130CDBContext.edmx.diagram">
       <DependentUpon>MySQL1130CDBContext.edmx</DependentUpon>
     </None>
@@ -104,6 +129,16 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MySQL0224G\MySQL0224GContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MySQL0224GContext.edmx</DependentUpon>
+      <LastGenOutput>MySQL0224GContext.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="MySQL0224G\MySQL0224GContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MySQL0224GContext.edmx</DependentUpon>
+      <LastGenOutput>MySQL0224GContext.cs</LastGenOutput>
+    </Content>
     <Content Include="MySQL1130C\MySQL1130CDBContext.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>MySQL1130CDBContext.edmx</DependentUpon>

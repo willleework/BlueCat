@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigManage.cs" />
+    <Compile Include="Entity\QuotationGroup1130.cs" />
+    <Compile Include="Entity\QuotationGroupDetails1130.cs" />
     <Compile Include="Entity\GridConfigModifyTask.cs" />
     <Compile Include="Entity\GridConfigModifyTaskParam.cs" />
     <Compile Include="Entity\GridLayoutColumnInfo.cs" />

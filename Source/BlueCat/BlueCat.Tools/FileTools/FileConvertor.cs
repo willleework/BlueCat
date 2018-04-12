@@ -21,6 +21,15 @@ namespace BlueCat.Tools.FileTools
 
 
         #region 序列化
+        /// <summary>
+        /// 将字符串写入指定文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="info"></param>
+        public static void WriteFile(string filePath, string info)
+        {
+            System.IO.File.WriteAllText(filePath, info);
+        }
 
         /// <summary>
         /// 序列化

@@ -115,7 +115,7 @@ namespace BlueCat.Tests
             int operate_no = 10005;
             string client_config_type = "0";
             string sys_version_no = "OPLUS_20171130B";
-            ConfigManage.ModifyServerConfig(dbConn, operate_no, client_config_type, sys_version_no, config);
+            //ConfigManage.ModifyServerConfig(dbConn, operate_no, client_config_type, sys_version_no, config);
         }
     }
 }
