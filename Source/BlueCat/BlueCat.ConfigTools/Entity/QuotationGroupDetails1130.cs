@@ -6,7 +6,7 @@ namespace BlueCat.ConfigTools.Quotation1130
     /// <summary>
     /// 期货行情组详情
     /// </summary>
-    public class item
+    public class QuotationGroupDetails1130
     {
         #region 属性
         /// <summary>

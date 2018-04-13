@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{053677FD-4E79-420F-9DFF-152E540B3FE5}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>BlueCat.Client</RootNamespace>
-    <AssemblyName>BlueCat.Client</AssemblyName>
+    <ProjectGuid>{C5E06EE1-BBDB-4952-972C-8D554E9E64DD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BlueCat.Cache</RootNamespace>
+    <AssemblyName>BlueCat.Cache</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.8.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.8.8\lib\net45\MySql.Data.dll</HintPath>
@@ -50,66 +47,29 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlueCat.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BlueCat.Designer.cs">
-      <DependentUpon>BlueCat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LocalParam.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="CachePool.cs" />
+    <Compile Include="CacheTables\FutureArbitrageCache.cs" />
+    <Compile Include="CacheTables\StockCache.cs" />
+    <Compile Include="DBAdapter.cs" />
+    <Compile Include="Interface\ICacheTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="BlueCat.resx">
-      <DependentUpon>BlueCat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlueCat.Cache\BlueCat.Cache.csproj">
-      <Project>{C5E06EE1-BBDB-4952-972C-8D554E9E64DD}</Project>
-      <Name>BlueCat.Cache</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlueCat.ConfigTools\BlueCat.ConfigTools.csproj">
-      <Project>{87a08f46-e1cc-4245-919c-ff59cbb79cb1}</Project>
-      <Name>BlueCat.ConfigTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlueCat.Tools\BlueCat.Tools.csproj">
-      <Project>{aa11893e-a3b4-4b69-a80e-1601d58ab33e}</Project>
-      <Name>BlueCat.Tools</Name>
+    <ProjectReference Include="..\BlueCat.DAL\BlueCat.DAL.csproj">
+      <Project>{0fc9194c-9654-4b16-8ba1-e2443b31191d}</Project>
+      <Name>BlueCat.DAL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

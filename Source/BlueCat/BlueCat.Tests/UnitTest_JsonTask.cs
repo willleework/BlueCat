@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace BlueCat.Tests
 {
     [TestClass]
-    public class UnitTest_GridConfigLocalReadTest
+    public class UnitTest_JsonTask
     {
         [TestMethod]
         public void Test_SerializeTest()

@@ -48,12 +48,12 @@ namespace BlueCat.ConfigTools
         [XmlAttribute("IsDefault")]
         public string IsDefault { get; set;}
 
-        private List<item> _FutureQuotationGroupdetails = new List<item>();
+        private List<QuotationGroupDetails1130> _FutureQuotationGroupdetails = new List<QuotationGroupDetails1130>();
         /// <summary>
         /// 期货行情组详情
         /// </summary>
         [XmlElement("item")]
-        public List<item> Quoatations
+        public List<QuotationGroupDetails1130> Quoatations
         {
             get
             {
@@ -61,6 +61,7 @@ namespace BlueCat.ConfigTools
             }
         }
         #endregion
+
     }
 
 }

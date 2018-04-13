@@ -1,4 +1,5 @@
-﻿using BlueCat.DAL.MySQL1130C;
+﻿using BlueCat.Cache;
+using BlueCat.DAL.MySQL1130C;
 using BlueCat.Tools.FileTools;
 using Newtonsoft.Json;
 using System;
@@ -23,6 +24,16 @@ namespace BlueCat.ConfigTools
         /// 消息事件
         /// </summary>
         public static EventHandler<ConfigManageEventArgs> MesageEvent;
+
+        /// <summary>
+        /// 表格配置文件
+        /// </summary>
+        private static string gridLayoutConfig = "GridLayoutInfo.xml";
+
+        /// <summary>
+        /// 行情配置文件
+        /// </summary>
+        private static string quotationGroup = "QuotationGroup.xml";
         #endregion
 
         /// <summary>
@@ -167,7 +178,7 @@ namespace BlueCat.ConfigTools
         /// </summary>
         /// <param name="zipFilePath"></param>
         /// <returns></returns>
-        public static GridLayoutInfo GetGridConfigEntityFromZipFile(string zipFilePath, string decompressPath)
+        public static GridLayoutInfo GetGridConfigEntityFromFile(string decompressPath)
         {
             GridLayoutInfo config = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(decompressPath);
             return config;
@@ -257,7 +268,7 @@ namespace BlueCat.ConfigTools
         /// 配置文件更新
         /// </summary>
         /// <param name="conConfig">数据库连接配置信息</param>
-        public static void ModifyServerConfig(string conConfig, int operate_no, string client_config_type, string sys_version_no, string sys_version_no_new, string taskConfig)
+        public static void ModifyServerConfig(string conConfig, int operate_no, string client_config_type, string sys_version_no, string sys_version_no_new, string taskConfig, CachePool pool)
         {
             try
             {
@@ -267,10 +278,12 @@ namespace BlueCat.ConfigTools
                 string serverZip = Path.Combine(zipPath, "serverData.7z.001");
                 string localZip = Path.Combine(zipPath, "localData.7z");
                 string deZipPath = Path.Combine(workPath, "Decompress");
+                string[] configFile = new string[] { };
+                bool needModify = false;
                 //string taskConfig = Path.Combine(workPath, "TaskConfig", "ConfigTasks.json");
                 _dbConnect = conConfig;
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("配置工作路径成功", 5));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始配置工作路径成功", 2));
 
                 if (Directory.Exists(zipPath))
                 {
@@ -283,9 +296,9 @@ namespace BlueCat.ConfigTools
                     Directory.Delete(deZipPath, true);
                 }
                 Directory.CreateDirectory(deZipPath);
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("工作路径配置成功", 5));
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("创建工作路径成功", 10));
-
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始从数据库查询用户配置信息", 6));
                 //从数据库获取配置信息
                 List<yh_tclientconfig> configs = GetServerConfigInfo(operate_no, client_config_type, sys_version_no);
                 if (configs.Count <= 0)
@@ -293,9 +306,9 @@ namespace BlueCat.ConfigTools
                     PrintErrEndLine("数据库查询不到相关配置信息", 0);
                     return;
                 }
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("查询配置信息成功", 20));
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从数据库获取到配置数据", 30));
-
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解析数据库配置信息", 21));
                 //筛选出最大版本号（config_version）的配置信息并按照文件序号排序（serial_no压缩包顺序）
                 int config_version = configs.Max(p => p.config_version);
                 configs = configs.Where(p => p.config_version == config_version).ToList().OrderBy(p => p.serial_no).ToList();
@@ -308,74 +321,94 @@ namespace BlueCat.ConfigTools
                     cmpFileName = "serverData.7z." + (i + 1).ToString().PadLeft(3, '0');
                     GetConfigFileFromDbData(configs[i].config_info, Path.Combine(zipPath, cmpFileName));
                 }
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件", 35));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件成功", 30));
 
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解压文件", 31));
                 //解压文件并获取表格配置信息
                 FileConvertor.SevenZipDecompress(serverZip, deZipPath);
-                string decompressPath = Path.Combine(deZipPath, "GridLayoutInfo.xml");
-                if (!File.Exists(decompressPath))
-                {
-                    PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件，无需修改", 0);
-                    return;
-                }
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", 40));
 
+                //生成配置文件路径
+                string gridLayoutPath = Path.Combine(deZipPath, gridLayoutConfig);
+                string quotationPath = Path.Combine(deZipPath, quotationGroup);
                 #region 修改GridConfig
-                GridLayoutInfo config = GetGridConfigEntityFromZipFile(serverZip, decompressPath);
-                if (config == null)
+                if (File.Exists(gridLayoutPath))
                 {
-                    PrintErrEndLine("从配置文件生成表格配置信息失败", 0);
-                    return;
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改GridLayoutInfo文件", 41));
+                    GridLayoutInfo config = GetGridConfigEntityFromFile(gridLayoutPath);
+                    if (config == null)
+                    {
+                        PrintErrEndLine("从配置文件生成表格配置信息失败", 0);
+                        return;
+                    }
+
+                    //从json配置中生成修改任务
+                    List<GridConfigModifyTask> tasks = GetTask(taskConfig, config);
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("从json配置中生成修改任务", 45));
+
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("执行修改任务"));
+                    //任务处理
+                    foreach (GridConfigModifyTask task in tasks)
+                    {
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行任务：{0}， 修改视图：{1}，修改主键：{2}", task.TaskID, task.TaskParam.View, task.TaskParam.KeyField)));
+                        task.TaskHandle();
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", task.TaskID)));
+                    }
+
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中", 50));
+                    //将修改保存到文件中
+                    FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, gridLayoutConfig);
+                    needModify = true;
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改GridLayoutInfo文件成功", 55));
                 }
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件并获取表格配置信息", 40));
-
-                //从json配置中生成修改任务
-                List<GridConfigModifyTask> tasks = GetTask(taskConfig, config);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("从json配置中生成修改任务", 45));
-
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("执行修改任务"));
-                //任务处理
-                foreach (GridConfigModifyTask task in tasks)
+                else
                 {
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行任务：{0}， 修改视图：{1}，修改主键：{2}", task.TaskID, task.TaskParam.View, task.TaskParam.KeyField)));
-                    task.TaskHandle();
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", task.TaskID)));
+                    PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件", 55);
                 }
-
-                //此处不需要进行并行处理，简单foreach循环效率要比并行效率高
-                //Parallel.ForEach(tasks, p => 
-                //{
-                //    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行任务：{0}， 修改视图：{1}，修改主键：{2}", p.TaskID, p.TaskParam.View, p.TaskParam.KeyField)));
-                //    p.TaskHandle();
-                //    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", p.TaskID)));
-                //});
-
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中", 60));
-                //将修改保存到文件中
-                FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, Path.Combine(deZipPath, "GridLayoutInfo.xml"));
                 #endregion
 
                 #region 修改行情文件
-
+                if (File.Exists(quotationPath))
+                {
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改QuotationGroup文件", 56));
+                    FutureQuotationConvertor convertor = new FutureQuotationConvertor(pool);
+                    convertor.FutureQuotationModify(quotationPath, quotationPath);
+                    needModify = true;
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("用户QuotationGroup文件处理成功", 70));
+                }
+                else
+                {
+                    PrintErrEndLine("该用户尚未生成QuotationGroup配置文件", 70);
+                }
                 #endregion
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 65));
-                //压缩文件
-                FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
-
-                SaveConfigInfoToModels(configs, localZip, sys_version_no_new); 
-
-                if (configs.Count <= 0)
+                if (needModify)
                 {
-                    PrintErrEndLine("没有需要保存的数据", 0);
-                    return;
-                }
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 71));
+                    //压缩文件
+                    FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始保存信息到数据库", 70));
-                //保存到数据库
-                AddConfigInfo2DB(configs);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", 100));
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
+                    SaveConfigInfoToModels(configs, localZip, sys_version_no_new);
+
+                    if (configs.Count <= 0)
+                    {
+                        PrintErrEndLine("没有需要保存的数据", 0);
+                        return;
+                    }
+
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始保存信息到数据库", 75));
+                    //保存到数据库
+                    AddConfigInfo2DB(configs);
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", 100));
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
+                }
+                else
+                {
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有需要修改的文件", 100));
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
+                }
             }
             catch (Exception ex)
             {

@@ -83,7 +83,7 @@ namespace BlueCat.Tests
             ConfigManage.GetConfigFileFromDbData(dbconfigs[0].config_info, desPath);
 
             //解压文件，并获取配置信息
-            GridLayoutInfo info = ConfigManage.GetGridConfigEntityFromZipFile(desPath, Path.Combine(_tempWorkPath, "Decompress"));
+            GridLayoutInfo info = ConfigManage.GetGridConfigEntityFromFile(desPath);
 
             //Assert.IsTrue(info != null);
 

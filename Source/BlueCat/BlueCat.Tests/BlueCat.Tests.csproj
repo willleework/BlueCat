@@ -83,7 +83,7 @@
     <Compile Include="UnitTest_QuotationGroup.cs" />
     <Compile Include="UnitTest_ConfigTools.cs" />
     <Compile Include="UnitTest_EFTest.cs" />
-    <Compile Include="UnitTest_GridConfigLocalReadTest.cs" />
+    <Compile Include="UnitTest_JsonTask.cs" />
     <Compile Include="UnitTest_ConfigModify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest_UploadFile.cs" />
@@ -93,6 +93,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BlueCat.Cache\BlueCat.Cache.csproj">
+      <Project>{C5E06EE1-BBDB-4952-972C-8D554E9E64DD}</Project>
+      <Name>BlueCat.Cache</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BlueCat.ConfigTools\BlueCat.ConfigTools.csproj">
       <Project>{87a08f46-e1cc-4245-919c-ff59cbb79cb1}</Project>
       <Name>BlueCat.ConfigTools</Name>

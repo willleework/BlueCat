@@ -59,7 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigConvertor\FutureQuotationConvertor.cs" />
     <Compile Include="ConfigManage.cs" />
+    <Compile Include="Entity\QuotationGroup0224G.cs" />
+    <Compile Include="Entity\QuotationGroupDetails0224G.cs" />
     <Compile Include="Entity\QuotationGroup1130.cs" />
     <Compile Include="Entity\QuotationGroupDetails1130.cs" />
     <Compile Include="Entity\GridConfigModifyTask.cs" />
@@ -72,6 +75,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BlueCat.Cache\BlueCat.Cache.csproj">
+      <Project>{C5E06EE1-BBDB-4952-972C-8D554E9E64DD}</Project>
+      <Name>BlueCat.Cache</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BlueCat.DAL\BlueCat.DAL.csproj">
       <Project>{0FC9194C-9654-4B16-8BA1-E2443B31191D}</Project>
       <Name>BlueCat.DAL</Name>

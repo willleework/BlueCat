@@ -1,4 +1,5 @@
-﻿using BlueCat.ConfigTools;
+﻿using BlueCat.Cache;
+using BlueCat.ConfigTools;
 using BlueCat.Tools.FileTools;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,7 @@ namespace BlueCat.Client
                 this.Invoke(meDelegate, sender, args);
                 return;
             }
+            //信息展示
             if (!string.IsNullOrWhiteSpace(args.Message))
             {
                 rtb_Monitor.AppendText(string.Format("【{0}】 {1}", DateTime.Now.ToString("HH:MM:ss-fff"), args.Message));
@@ -74,6 +76,8 @@ namespace BlueCat.Client
             {
                 rtb_Monitor.AppendText(Environment.NewLine);
             }
+
+            //进度条控制
             if (args.ProgressIndex >= 0)
             {
                 toolbarStatus.Value = args.ProgressIndex;
@@ -118,6 +122,8 @@ namespace BlueCat.Client
             {
                 txt_operate_no.Text = "多个操作员用，分隔";
             }
+
+            rtb_Monitor.AppendText("-------------------=>WARNING!!!使用前请先备份数据库用户配置表TT-------------------");
         }
 
         /// <summary>
@@ -191,9 +197,12 @@ namespace BlueCat.Client
             {
                 try
                 {
+                    CachePool pool = new CachePool();
+                    pool.Init(dbConn);
+
                     foreach (int opt in opts)
                     {
-                        ConfigManage.ModifyServerConfig(dbConn, opt, client_cfig_type, sys_serversion_curr, sys_ver_no_next, cfg);
+                        ConfigManage.ModifyServerConfig(dbConn, opt, client_cfig_type, sys_serversion_curr, sys_ver_no_next, cfg, pool);
                     }
                 }
                 finally
@@ -288,6 +297,11 @@ namespace BlueCat.Client
             FileConvertor.WriteFile(path, rtb_Monitor.Text);
         }
 
+        /// <summary>
+        /// 保持监控面板滚动条始终在最底端
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rtb_Monitor_TextChanged(object sender, EventArgs e)
         {
             rtb_Monitor.SelectionStart = rtb_Monitor.Text.Length; //Set the current caret position at the end
