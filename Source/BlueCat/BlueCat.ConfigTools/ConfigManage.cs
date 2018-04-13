@@ -36,71 +36,7 @@ namespace BlueCat.ConfigTools
         private static string quotationGroup = "QuotationGroup.xml";
         #endregion
 
-        /// <summary>
-        /// 获取表格配置文件
-        /// </summary>
-        /// <param name="xmlPath"></param>
-        /// <returns></returns>
-        public static GridLayoutInfo GetGidLayoutConfig(string xmlPath)
-        {
-            GridLayoutInfo frameLayoutInfo;
-            if (File.Exists(xmlPath))
-            {
-                string xml = File.ReadAllText(xmlPath, Encoding.UTF8);
-                frameLayoutInfo = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(xml);
-            }
-            else
-            {
-                frameLayoutInfo = new GridLayoutInfo();
-            }
-            return frameLayoutInfo;
-        }
-
-        /// <summary>
-        /// 从Json文件获取任务配置参数
-        /// </summary>
-        /// <param name="jsonPath"></param>
-        /// <returns></returns>
-        private static List<GridConfigModifyTaskParam> GetTaskParam(string jsonPath)
-        {
-            List<GridConfigModifyTaskParam> cfm;
-            //jsonPath = Path.Combine(Environment.CurrentDirectory, "TaskInfo", "ConfigTasks.json");
-            using (StreamReader sr = new StreamReader(jsonPath))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.NullValueHandling = NullValueHandling.Ignore;
-
-                //构建Json.net的读取流  
-                JsonReader reader = new JsonTextReader(sr);
-
-                //对读取出的Json.net的reader流进行反序列化，并装载到模型中  
-                cfm = serializer.Deserialize<List<GridConfigModifyTaskParam>>(reader);
-            }
-            return cfm;
-        }
-
-        /// <summary>
-        /// 根据json配置文件获取任务
-        /// </summary>
-        /// <param name="taskConfigPath"></param>
-        /// <returns></returns>
-        public static List<GridConfigModifyTask> GetTask(string taskConfigPath, GridLayoutInfo config)
-        {
-            List<GridConfigModifyTask> tasks = new List<GridConfigModifyTask>();
-            List<GridConfigModifyTaskParam> taskParams = GetTaskParam(taskConfigPath);
-            foreach (GridConfigModifyTaskParam param in taskParams)
-            {
-                GridConfigModifyTask task = new GridConfigModifyTask();
-                task.TaskID = Guid.NewGuid();
-                task.TaskDescription = "表格配置文件修改";
-                task.TaskPriority = TaskManage.Priority.FirstLevel;
-                task.TaskParam = param;
-                task.TaskParam.GridConfigInfo = config;
-                tasks.Add(task);
-            }
-            return tasks;
-        }
-
+        #region 数据库操作
         /// <summary>
         /// 获取服务端配置数据
         /// </summary>
@@ -150,14 +86,15 @@ namespace BlueCat.ConfigTools
                 _mySQL.SaveChanges();
             }
         }
+        #endregion
 
+        #region 文件及流处理
         /// <summary>
         /// 从数据字符串获取文件
         /// </summary>
         /// <param name="dbData"></param>
         public static void GetConfigFileFromDbData(string dbData, string filseSavePath)
         {
-            //string desPath = Path.Combine(_tempWorkPath, "Compress.7z");
             byte[] dbBytes = Convert.FromBase64String(dbData);
             FileConvertor.Bytes2File(dbBytes, filseSavePath);
         }
@@ -171,17 +108,6 @@ namespace BlueCat.ConfigTools
         {
             byte[] dbBytes = FileConvertor.File2Bytes(filePath);
             return Convert.ToBase64String(dbBytes);
-        }
-
-        /// <summary>
-        /// 从压缩文件中解压并反序列化配置类
-        /// </summary>
-        /// <param name="zipFilePath"></param>
-        /// <returns></returns>
-        public static GridLayoutInfo GetGridConfigEntityFromFile(string decompressPath)
-        {
-            GridLayoutInfo config = FileConvertor.XmlDeserializeObjectFromFile<GridLayoutInfo>(decompressPath);
-            return config;
         }
 
         /// <summary>
@@ -233,7 +159,9 @@ namespace BlueCat.ConfigTools
                 update_time = config.update_time
             };
         }
+        #endregion
 
+        #region 外部消息事件处理
         /// <summary>
         /// 异常处理
         /// </summary>
@@ -261,8 +189,8 @@ namespace BlueCat.ConfigTools
             MesageEvent?.Invoke(null, new ConfigManageEventArgs(info, process));
             MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
             MesageEvent?.Invoke(null, new ConfigManageEventArgs(""));
-        }
-
+        } 
+        #endregion
 
         /// <summary>
         /// 配置文件更新
@@ -280,10 +208,14 @@ namespace BlueCat.ConfigTools
                 string deZipPath = Path.Combine(workPath, "Decompress");
                 string[] configFile = new string[] { };
                 bool needModify = false;
-                //string taskConfig = Path.Combine(workPath, "TaskConfig", "ConfigTasks.json");
+                //生成配置文件路径
+                string gridLayoutPath = Path.Combine(deZipPath, gridLayoutConfig);
+                string quotationPath = Path.Combine(deZipPath, quotationGroup);
+
                 _dbConnect = conConfig;
 
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始配置工作路径成功", 2));
+                #region 创建工作目录
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始配置工作路径", 2));
 
                 if (Directory.Exists(zipPath))
                 {
@@ -297,7 +229,9 @@ namespace BlueCat.ConfigTools
                 }
                 Directory.CreateDirectory(deZipPath);
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("工作路径配置成功", 5));
+                #endregion
 
+                #region 从数据库获取配置信息
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始从数据库查询用户配置信息", 6));
                 //从数据库获取配置信息
                 List<yh_tclientconfig> configs = GetServerConfigInfo(operate_no, client_config_type, sys_version_no);
@@ -326,38 +260,15 @@ namespace BlueCat.ConfigTools
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解压文件", 31));
                 //解压文件并获取表格配置信息
                 FileConvertor.SevenZipDecompress(serverZip, deZipPath);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", 40));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", 40)); 
+                #endregion
 
-                //生成配置文件路径
-                string gridLayoutPath = Path.Combine(deZipPath, gridLayoutConfig);
-                string quotationPath = Path.Combine(deZipPath, quotationGroup);
                 #region 修改GridConfig
                 if (File.Exists(gridLayoutPath))
                 {
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改GridLayoutInfo文件", 41));
-                    GridLayoutInfo config = GetGridConfigEntityFromFile(gridLayoutPath);
-                    if (config == null)
-                    {
-                        PrintErrEndLine("从配置文件生成表格配置信息失败", 0);
-                        return;
-                    }
-
-                    //从json配置中生成修改任务
-                    List<GridConfigModifyTask> tasks = GetTask(taskConfig, config);
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("从json配置中生成修改任务", 45));
-
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("执行修改任务"));
-                    //任务处理
-                    foreach (GridConfigModifyTask task in tasks)
-                    {
-                        MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行任务：{0}， 修改视图：{1}，修改主键：{2}", task.TaskID, task.TaskParam.View, task.TaskParam.KeyField)));
-                        task.TaskHandle();
-                        MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("完成任务：{0}", task.TaskID)));
-                    }
-
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("将修改保存到文件中", 50));
-                    //将修改保存到文件中
-                    FileConvertor.ObjectSerializeXmlFile<GridLayoutInfo>(config, gridLayoutConfig);
+                    GridLayoutConvertor gridConvertor = new GridLayoutConvertor(taskConfig);
+                    gridConvertor.GridLayoutConfigModify(gridLayoutPath, gridLayoutPath);
                     needModify = true;
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改GridLayoutInfo文件成功", 55));
                 }
@@ -382,6 +293,7 @@ namespace BlueCat.ConfigTools
                 }
                 #endregion
 
+                #region 保存数据到数据库
                 if (needModify)
                 {
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 71));
@@ -408,7 +320,8 @@ namespace BlueCat.ConfigTools
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有需要修改的文件", 100));
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
-                }
+                } 
+                #endregion
             }
             catch (Exception ex)
             {
@@ -419,6 +332,9 @@ namespace BlueCat.ConfigTools
 
     }
 
+    /// <summary>
+    /// 外部消息
+    /// </summary>
     public class ConfigManageEventArgs
     {
         /// <summary>

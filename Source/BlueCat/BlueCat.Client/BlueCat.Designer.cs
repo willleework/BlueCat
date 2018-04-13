@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlueCat));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolbarStatus = new System.Windows.Forms.ToolStripProgressBar();
@@ -324,6 +325,7 @@
             // 
             // btn_Modify
             // 
+            this.btn_Modify.Enabled = false;
             this.btn_Modify.Location = new System.Drawing.Point(111, 276);
             this.btn_Modify.Name = "btn_Modify";
             this.btn_Modify.Size = new System.Drawing.Size(90, 23);
@@ -440,6 +442,7 @@
             this.Controls.Add(this.inputGroup);
             this.Controls.Add(this.statusStrip1);
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BlueCat";
             this.Text = "BlueCat";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BlueCat_FormClosing);

@@ -17,7 +17,6 @@ namespace BlueCat.Client
 {
     public partial class BlueCat : Form
     {
-
         #region 变量
         string _dbip = string.Empty;
         string _dbuser = string.Empty;
@@ -45,57 +44,18 @@ namespace BlueCat.Client
         /// 用户界面参数
         /// </summary>
         string configPath = Path.Combine(Environment.CurrentDirectory, "Resource", "Config", "LocalUserParam.xml");
+
+        /// <summary>
+        /// 本地数据池
+        /// </summary>
+        CachePool pool = new CachePool();
         #endregion
 
+        #region 初始化
         public BlueCat()
         {
             InitializeComponent();
             ConfigManage.MesageEvent += MessageEventHandler;
-        }
-
-        /// <summary>
-        /// 消息处理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void MessageEventHandler(object sender, ConfigManageEventArgs args)
-        {
-            if (this.rtb_Monitor.InvokeRequired)
-            {
-                messgaeEventDelegate meDelegate = new messgaeEventDelegate(MessageEventHandler);
-                this.Invoke(meDelegate, sender, args);
-                return;
-            }
-            //信息展示
-            if (!string.IsNullOrWhiteSpace(args.Message))
-            {
-                rtb_Monitor.AppendText(string.Format("【{0}】 {1}", DateTime.Now.ToString("HH:MM:ss-fff"), args.Message));
-                rtb_Monitor.AppendText(Environment.NewLine);
-            }
-            else
-            {
-                rtb_Monitor.AppendText(Environment.NewLine);
-            }
-
-            //进度条控制
-            if (args.ProgressIndex >= 0)
-            {
-                toolbarStatus.Value = args.ProgressIndex;
-            }
-        }
-
-        /// <summary>
-        /// 下单完成事件
-        /// </summary>
-        private void CallbackFunc()
-        {
-            if (this.InvokeRequired)
-            {
-                CallBackDelegate callback = new CallBackDelegate(CallbackFunc);
-                this.Invoke(callback);
-                return;
-            }
-            btn_Modify.Enabled = true;
         }
 
         /// <summary>
@@ -124,8 +84,11 @@ namespace BlueCat.Client
             }
 
             rtb_Monitor.AppendText("-------------------=>WARNING!!!使用前请先备份数据库用户配置表TT-------------------");
-        }
+            rtb_Monitor.AppendText(Environment.NewLine);
+        } 
+        #endregion
 
+        #region 事件响应
         /// <summary>
         /// 数据库连接信息设置
         /// </summary>
@@ -133,17 +96,45 @@ namespace BlueCat.Client
         /// <param name="e"></param>
         private void btn_DBSetting_Click(object sender, EventArgs e)
         {
-            _dbip = txt_dbip.Text;
-            _dbuser = txt_dbuser.Text;
-            _dbpot = txt_dbpot.Text;
-            _dbpass = txt_dbpass.Text;
-            _dbName = txt_dbName.Text;
-            txt_dbip.ReadOnly = true;
-            txt_dbuser.ReadOnly = true;
-            txt_dbpass.ReadOnly = true;
-            txt_dbpot.ReadOnly = true;
-            txt_dbName.ReadOnly = true;
-            tabDataBase.SelectedTab = tabPage2;
+            try
+            {
+                _dbip = txt_dbip.Text;
+                _dbuser = txt_dbuser.Text;
+                _dbpot = txt_dbpot.Text;
+                _dbpass = txt_dbpass.Text;
+                _dbName = txt_dbName.Text;
+                txt_dbip.ReadOnly = true;
+                txt_dbuser.ReadOnly = true;
+                txt_dbpass.ReadOnly = true;
+                txt_dbpot.ReadOnly = true;
+                txt_dbName.ReadOnly = true;
+                string dbConn = string.Format("server={0};user id={1};password={2};port={3};persistsecurityinfo=True;database={4}", _dbip, _dbuser, _dbpass, _dbpot, _dbName);
+                ShowRunInfo("数据库配置信息：", false);
+                ShowRunInfo(dbConn, false);
+                ShowRunInfo("--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--", false);
+                new Thread(() =>
+                {
+                    ConfigManageEventArgs args = new ConfigManageEventArgs("初始化本地数据池");
+                    try
+                    {
+                        MessageEventHandler(null, args);
+                        pool.Init(dbConn);
+                        args.Message = "本地数据池初始化完成";
+                        MessageEventHandler(null, args);
+                    }
+                    catch (Exception ex)
+                    {
+                        args.Message = ex.Message;
+                        MessageEventHandler(null, args);
+                        return;
+                    }
+                    CallbackFuncSetModifyEnabled();
+                }).Start();
+            }
+            catch (Exception ex)
+            {
+                ShowRunInfo(ex.Message);
+            }
         }
 
         /// <summary>
@@ -193,13 +184,10 @@ namespace BlueCat.Client
             string cfg = txt_cfg.Text;
             List<int> opts = GetOperateNos(txt_operate_no.Text.Trim());
             btn_Modify.Enabled = false;
-            new Thread(() => 
+            new Thread(() =>
             {
                 try
                 {
-                    CachePool pool = new CachePool();
-                    pool.Init(dbConn);
-
                     foreach (int opt in opts)
                     {
                         ConfigManage.ModifyServerConfig(dbConn, opt, client_cfig_type, sys_serversion_curr, sys_ver_no_next, cfg, pool);
@@ -207,7 +195,7 @@ namespace BlueCat.Client
                 }
                 finally
                 {
-                    CallbackFunc();
+                    CallbackFuncSetModifyEnabled();
                 }
             }).Start();
         }
@@ -219,9 +207,9 @@ namespace BlueCat.Client
         /// <returns></returns>
         private List<int> GetOperateNos(string operates)
         {
-            List<int> numOpts = new List<int> ();
-            string[] opts = operates.Split(new char[]{ ',', '，'});
-                int operateNo;
+            List<int> numOpts = new List<int>();
+            string[] opts = operates.Split(new char[] { ',', '，' });
+            int operateNo;
             foreach (string opt in opts)
             {
                 if (!int.TryParse(opt, out operateNo))
@@ -242,24 +230,6 @@ namespace BlueCat.Client
         private void BlueCat_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveUserDataToParam();
-        }
-
-        /// <summary>
-        /// 保存用户参数
-        /// </summary>
-        private void SaveUserDataToParam()
-        {
-            userParam.DbServerIP = txt_dbip.Text;
-            userParam.DbServerPot = txt_dbpot.Text;
-            userParam.DbServerUser = txt_dbuser.Text;
-            userParam.DbServerPss = txt_dbpass.Text;
-            userParam.DbName = txt_dbName.Text;
-            userParam.LastOperateNo = txt_operate_no.Text;
-            userParam.LastSysVersionNo = txt_sys_version_no.Text;
-            userParam.NextSysVersionNo = txt_sys_ver_no_new.Text;
-            userParam.LastClientConfigType = txt_client_config_type.Text;
-            userParam.ConfigPath = txt_cfg.Text;
-            FileConvertor.ObjectSerializeXmlFile(userParam, configPath);
         }
 
         /// <summary>
@@ -306,6 +276,101 @@ namespace BlueCat.Client
         {
             rtb_Monitor.SelectionStart = rtb_Monitor.Text.Length; //Set the current caret position at the end
             rtb_Monitor.ScrollToCaret(); //Now scroll it automatically
+        } 
+        #endregion
+
+        #region 功能函数
+        /// <summary>
+        /// 消息处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void MessageEventHandler(object sender, ConfigManageEventArgs args)
+        {
+            if (this.rtb_Monitor.InvokeRequired)
+            {
+                messgaeEventDelegate meDelegate = new messgaeEventDelegate(MessageEventHandler);
+                this.Invoke(meDelegate, sender, args);
+                return;
+            }
+            //信息展示
+            if (!string.IsNullOrWhiteSpace(args.Message))
+            {
+                ShowRunInfo(args.Message);
+            }
+            else
+            {
+                rtb_Monitor.AppendText(Environment.NewLine);
+            }
+
+            //进度条控制
+            if (args.ProgressIndex >= 0)
+            {
+                toolbarStatus.Value = args.ProgressIndex;
+            }
         }
+
+        /// <summary>
+        /// 展示信息
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="withTime"></param>
+        private void ShowRunInfo(string info, bool withTime = true)
+        {
+            //信息展示
+            if (!string.IsNullOrWhiteSpace(info))
+            {
+                if (withTime)
+                {
+                    rtb_Monitor.AppendText(string.Format("【{0}】 {1}", DateTime.Now.ToString("HH:MM:ss-fff"), info));
+                }
+                else
+                {
+                    rtb_Monitor.AppendText(info);
+                }
+                rtb_Monitor.AppendText(Environment.NewLine);
+            }
+            else
+            {
+                rtb_Monitor.AppendText(Environment.NewLine);
+            }
+        }
+
+        /// <summary>
+        /// 下单完成事件
+        /// </summary>
+        private void CallbackFuncSetModifyEnabled()
+        {
+            if (this.InvokeRequired)
+            {
+                CallBackDelegate callback = new CallBackDelegate(CallbackFuncSetModifyEnabled);
+                this.Invoke(callback);
+                return;
+            }
+            if (tabDataBase.SelectedTab != tabPage2)
+            {
+                tabDataBase.SelectedTab = tabPage2;
+            }
+            btn_Modify.Enabled = true;
+        }
+
+        /// <summary>
+        /// 保存用户参数
+        /// </summary>
+        private void SaveUserDataToParam()
+        {
+            userParam.DbServerIP = txt_dbip.Text;
+            userParam.DbServerPot = txt_dbpot.Text;
+            userParam.DbServerUser = txt_dbuser.Text;
+            userParam.DbServerPss = txt_dbpass.Text;
+            userParam.DbName = txt_dbName.Text;
+            userParam.LastOperateNo = txt_operate_no.Text;
+            userParam.LastSysVersionNo = txt_sys_version_no.Text;
+            userParam.NextSysVersionNo = txt_sys_ver_no_new.Text;
+            userParam.LastClientConfigType = txt_client_config_type.Text;
+            userParam.ConfigPath = txt_cfg.Text;
+            FileConvertor.ObjectSerializeXmlFile(userParam, configPath);
+        } 
+        #endregion
     }
 }

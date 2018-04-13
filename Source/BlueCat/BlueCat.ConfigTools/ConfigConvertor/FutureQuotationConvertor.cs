@@ -15,7 +15,10 @@ namespace BlueCat.ConfigTools
     /// </summary>
     public class FutureQuotationConvertor
     {
-        private CachePool _Pool = new CachePool();
+        /// <summary>
+        /// 本地数据池
+        /// </summary>
+        private CachePool _pool;
 
         /// <summary>
         /// 期货行情配置文件转换工具
@@ -23,7 +26,7 @@ namespace BlueCat.ConfigTools
         /// <param name="pool"></param>
         public FutureQuotationConvertor(CachePool pool)
         {
-            _Pool = pool;
+            _pool = pool;
         }
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace BlueCat.ConfigTools
             Save(groupFor0224G, destinationPath);
         }
 
+        #region 行情文件读取与保存
         /// <summary>
         /// 从文件加载行情信息（0224G）
         /// </summary>
@@ -117,23 +121,23 @@ namespace BlueCat.ConfigTools
                     pub_tstockinfo secondLeg = new pub_tstockinfo();
                     if (item.QuoteType == QuotationType.标准合约)
                     {
-                        standardContract = _Pool.Stock.GetPK(item.FirstIntercode);
+                        standardContract = _pool.Stock.GetPK(item.FirstIntercode);
                     }
                     else
                     {
                         if (item.QuoteType == QuotationType.本地套利)
                         {
-                            firstLeg = _Pool.Stock.GetPK(item.FirstIntercode);
-                            secondLeg = _Pool.Stock.GetPK(item.SecondIntercode);
+                            firstLeg = _pool.Stock.GetPK(item.FirstIntercode);
+                            secondLeg = _pool.Stock.GetPK(item.SecondIntercode);
                         }
                         else
                         {
-                            arbitrage = _Pool.ArbitrageCache.GetPK(item.ArbitrageCode);
+                            arbitrage = _pool.ArbitrageCache.GetPK(item.ArbitrageCode);
                             if (arbitrage.arbitrage_code > 0)
                             {
-                                arbiStock = _Pool.Stock.GetPK(item.ArbitrageCode);
-                                firstLeg = _Pool.Stock.GetPK((int)arbitrage.fir_intercode);
-                                secondLeg = _Pool.Stock.GetPK((int)arbitrage.sec_intercode);
+                                arbiStock = _pool.Stock.GetPK(item.ArbitrageCode);
+                                firstLeg = _pool.Stock.GetPK((int)arbitrage.fir_intercode);
+                                secondLeg = _pool.Stock.GetPK((int)arbitrage.sec_intercode);
                             }
                         }
                     }
@@ -311,7 +315,8 @@ namespace BlueCat.ConfigTools
             }
 
             return items;
-        }
+        } 
+        #endregion
     }
 
     /// <summary>
