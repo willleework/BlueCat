@@ -79,7 +79,7 @@ namespace BlueCat.ConfigTools
                     break;
                 case "Table":
                     {
-                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).First();
+                        GridLayoutViewInfo view = TaskParam.GridConfigInfo.Views.Where(p => p.Name.Equals(TaskParam.View)).FirstOrDefault();
                         if (view == null)
                         {
                             TaskResult = TaskResult.失败;

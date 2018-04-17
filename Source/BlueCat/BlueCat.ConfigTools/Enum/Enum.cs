@@ -30,4 +30,13 @@ namespace BlueCat.ConfigTools
         Modify,
         Query
     }
+
+    /// <summary>
+    /// 任务配置文件类型
+    /// </summary>
+    public enum TaskConfigFileType
+    {
+        EXCEL,
+        JSON
+    }
 }

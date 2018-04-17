@@ -290,7 +290,7 @@ namespace BlueCat.ConfigTools
                 }
                 if (xmlAttrList.Exists(p => p.Name.Equals("TriggerMode")))
                 {
-                    item.TriggerMode = (int)sxn.Attributes["TriggerMode"].Value[0];
+                    item.TriggerMode = int.Parse(sxn.Attributes["TriggerMode"].Value);
                 }
                 else
                 {

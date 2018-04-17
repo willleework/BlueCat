@@ -72,7 +72,7 @@ namespace BlueCat.Tests
         {
             int companyid = 300001;
             int operateno = 10005;
-            string sysversion = "OPLUS_20171130T1";
+            string sysversion = "OPLUS_20171130Y";
             int configversion = 1;
             int serialno = 1;
             string zipFilePath = Path.Combine(workPath, "Config.7z.001");
@@ -92,10 +92,10 @@ namespace BlueCat.Tests
         [TestMethod]
         public void TestMethod_Download7zFile()
         {
-            string zipPath = Path.Combine(workPath, "Compress", DateTime.Now.ToString("hhMMssfff") + ".7z.001");
+            string sysversion = "OPLUS_20171130Y5";
+            string zipPath = Path.Combine(workPath, "Compress", DateTime.Now.ToString(sysversion + "-yyyyMMdd-HHmmssfff") + ".7z.001");
             int companyid = 300001;
             int operateno = 10005;
-            string sysversion = "OPLUS_20171130T";
             int configversion = 1;
             int serialno = 1;
             yh_tclientconfig config = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion && p.serial_no == serialno).First();
