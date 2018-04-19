@@ -160,7 +160,7 @@ namespace BlueCat.Client
         {
             OpenFileDialog dialog = new OpenFileDialog();
             //dialog.InitialDirectory = "c:\\";
-            dialog.Filter = "Json文件(*.json)|*.JSON|Excel文件(*.xlsx)|*.XLSX";
+            dialog.Filter = "Excel文件(*.xlsx)|*.XLSX|Json文件(*.json)|*.JSON";
             dialog.FilterIndex = 1;
             dialog.RestoreDirectory = true;
 

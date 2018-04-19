@@ -444,7 +444,7 @@
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BlueCat";
-            this.Text = "BlueCat";
+            this.Text = "衍生品客户端配置文件升级同步工具";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BlueCat_FormClosing);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
