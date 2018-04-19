@@ -75,7 +75,7 @@ namespace BlueCat.Tests
             string sysversion = "OPLUS_20171130Y";
             int configversion = 1;
             int serialno = 1;
-            string zipFilePath = Path.Combine(workPath, "Config.7z.001");
+            string zipFilePath = Path.Combine(workPath, "Config.7z");
             byte[] datas = FileConvertor.File2Bytes(zipFilePath);
             string dataStream = Convert.ToBase64String(datas);
             yh_tclientconfig config = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion&&p.serial_no == serialno).First();
@@ -92,16 +92,21 @@ namespace BlueCat.Tests
         [TestMethod]
         public void TestMethod_Download7zFile()
         {
-            string sysversion = "OPLUS_20171130Y5";
-            string zipPath = Path.Combine(workPath, "Compress", DateTime.Now.ToString(sysversion + "-yyyyMMdd-HHmmssfff") + ".7z.001");
+            string sysversion = "OPLUS_20171130Y3";
+            string zipPath = Path.Combine(workPath, "Compress", DateTime.Now.ToString(sysversion + "-yyyyMMdd-HHmmssfff") + ".7z.");
             int companyid = 300001;
             int operateno = 10005;
             int configversion = 1;
             int serialno = 1;
-            yh_tclientconfig config = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion && p.serial_no == serialno).First();
+            //yh_tclientconfig config = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion && p.serial_no == serialno).First();
 
-            byte[] datas = Convert.FromBase64String(config.config_info);
-            FileConvertor.Bytes2File(datas, zipPath);
+            List<yh_tclientconfig> configs = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion ).ToList();
+            foreach (yh_tclientconfig config in configs)
+            {
+                byte[] datas = Convert.FromBase64String(config.config_info);
+                string ext = string.Format("{0:000}", config.serial_no);
+                FileConvertor.Bytes2File(datas, zipPath+ext);
+            }
         }
     }
 }
