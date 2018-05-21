@@ -49,7 +49,7 @@ namespace BlueCat.ConfigTools
             using (MySQL1130C _mySQL = new MySQL1130C())
             {
                 _mySQL.Database.Connection.ConnectionString = _dbConnect;
-                return _mySQL.yh_tclientconfig.Where(p => p.operator_no == operator_no && p.client_config_type == client_config_type && p.sys_version_no == sys_version_no).ToList();
+                return _mySQL.yh_tclientconfig.ToList().Where(p => p.operator_no == operator_no && ReplaceErrChar(p.client_config_type) == client_config_type && ReplaceErrChar(p.sys_version_no) == sys_version_no).ToList();
             }
         }
 
@@ -108,6 +108,16 @@ namespace BlueCat.ConfigTools
         {
             byte[] dbBytes = FileConvertor.File2Bytes(filePath);
             return Convert.ToBase64String(dbBytes);
+        }
+
+        /// <summary>
+        /// 替换换行符
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ReplaceErrChar(string str)
+        {
+            return str.Replace("\n\r", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
         }
 
         /// <summary>
