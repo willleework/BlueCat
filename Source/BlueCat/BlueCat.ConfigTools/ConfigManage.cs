@@ -39,6 +39,11 @@ namespace BlueCat.ConfigTools
         /// 自由布局文件
         /// </summary>
         private static string customLayout = "CustomLayoutConfig.xml";
+
+        /// <summary>
+        /// 综合屏配置文件
+        /// </summary>
+        private static string userScreen = "UserScreenInfo.xml";
         #endregion
 
         #region 数据库操作
@@ -228,6 +233,7 @@ namespace BlueCat.ConfigTools
                 string gridLayoutPath = Path.Combine(deZipPath, gridLayoutConfig);
                 string quotationPath = Path.Combine(deZipPath, quotationGroup);
                 string customLayoutPath = Path.Combine(deZipPath, customLayout);
+                string userScreenPath = Path.Combine(deZipPath, userScreen);
 
                 _dbConnect = conConfig;
 
@@ -309,6 +315,7 @@ namespace BlueCat.ConfigTools
                     #region 修改GridConfig
                     if (config_type.Equals("0"))
                     {
+                        //修改GridConfig
                         if (File.Exists(gridLayoutPath))
                         {
                             MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改GridLayoutInfo文件", process));
@@ -322,6 +329,27 @@ namespace BlueCat.ConfigTools
                         {
                             process = 70;
                             PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件", process);
+                        }
+                    }
+                    #endregion
+
+                    #region 修改类型1的配置文件
+                    if (config_type.Equals("1"))
+                    {
+                        //修改UserScreenInfo.xml
+                        if (File.Exists(userScreenPath))
+                        {
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改UserScreenInfo文件", process));
+                            UserScreenConvertor userScreenConvertor = new UserScreenConvertor(taskConfig);
+                            userScreenConvertor.UserScreenModify(userScreenPath, userScreenPath);
+                            needModify = true;
+                            process = (int)(process + processPer * 0.3);
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改UserScreenInfo文件成功", process));//70%
+                        }
+                        else
+                        {
+                            process = (int)(process + processPer * 0.3);
+                            PrintErrEndLine("该用户尚未生成UserScreenInfo配置文件", process);
                         }
                     }
                     #endregion

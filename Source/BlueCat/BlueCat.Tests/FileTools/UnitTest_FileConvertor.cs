@@ -16,7 +16,7 @@ namespace BlueCat.Tools.FileTools.Tests
         [TestMethod()]
         public void ImputFromExcelTest()
         {
-            List<CustomLayoutParam> param = ExcelHelper.ImputFromExcel<CustomLayoutParam>("D:\\customTest\\task.xlsx", 0, 0, "CustomLayout");
+            List<FieldConvertParam> param = ExcelHelper.ImputFromExcel<FieldConvertParam>("D:\\customTest\\task.xlsx", 0, 0, "CustomLayout");
             Assert.IsTrue(param != null && param.Count > 0);
         }
 
@@ -27,6 +27,16 @@ namespace BlueCat.Tools.FileTools.Tests
             string newFile = string.Format("D:\\customTest\\{0}.xml", DateTime.Now.ToString("yyyyMMdd-HHmmss-fff"));
             convertor.CustomLayoutModify("D:\\customTest\\CustomLayoutConfig.xml", newFile);
             Assert.IsTrue(File.Exists(newFile));
+        }
+
+        [TestMethod]
+        public void UserScreenModifyTest()
+        {
+            string excelPath = "F:\\ConfigTest\\task.xlsx";
+            string configFile = "F:\\ConfigTest\\UserScreenInfo.xml";
+            string configFile1 = "F:\\ConfigTest\\newUserScreenInfo.xml";
+            UserScreenConvertor screen = new UserScreenConvertor(excelPath);
+            screen.UserScreenModify(configFile, configFile1);
         }
     }
 }

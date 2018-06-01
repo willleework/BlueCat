@@ -10,15 +10,15 @@ namespace BlueCat.ConfigTools
 {
     public class CustomLayoutConvertor
     {
-        private List<CustomLayoutParam> _modifyParams = new List<CustomLayoutParam>();
-        public List<CustomLayoutParam> ModifyParams { get => _modifyParams; set => _modifyParams = value; }
+        private List<FieldConvertParam> _modifyParams = new List<FieldConvertParam>();
+        public List<FieldConvertParam> ModifyParams { get => _modifyParams; set => _modifyParams = value; }
 
         /// <summary>
         /// 自由布局配置转换器
         /// </summary>
         public CustomLayoutConvertor(string taskFile)
         {
-            ModifyParams = ExcelHelper.ImputFromExcel<CustomLayoutParam>(taskFile, 0, 0, "CustomLayout");
+            ModifyParams = ExcelHelper.ImputFromExcel<FieldConvertParam>(taskFile, 0, 0, "CustomLayout");
         }
 
 
@@ -31,7 +31,7 @@ namespace BlueCat.ConfigTools
         {
             if (!File.Exists(originPath))
             {
-                throw new Exception(string.Format("修改表格配置文件出错，自由布局文件不存在【{0}】", originPath));
+                throw new Exception(string.Format("修改配置文件出错，自由布局文件不存在【{0}】", originPath));
             }
             if (ModifyParams.Count <= 0)
             {
@@ -39,7 +39,7 @@ namespace BlueCat.ConfigTools
             }
             string file = FileConvertor.ReadFile(originPath);
             StringBuilder config = new StringBuilder(file);
-            foreach (CustomLayoutParam param in ModifyParams)
+            foreach (FieldConvertParam param in ModifyParams)
             {
                 config = config.Replace(param.FormerFieldValue, param.CurrentFieldValue);
             }
@@ -50,7 +50,7 @@ namespace BlueCat.ConfigTools
     /// <summary>
     /// 自由布局修改配置参数
     /// </summary>
-    public class CustomLayoutParam
+    public class FieldConvertParam
     {
         /// <summary>
         /// 上一版本值

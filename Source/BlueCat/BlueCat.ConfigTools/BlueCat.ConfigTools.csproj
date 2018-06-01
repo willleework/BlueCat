@@ -62,6 +62,7 @@
     <Compile Include="ConfigConvertor\CustomLayoutConvertor.cs" />
     <Compile Include="ConfigConvertor\FutureQuotationConvertor.cs" />
     <Compile Include="ConfigConvertor\GridLayoutConvertor.cs" />
+    <Compile Include="ConfigConvertor\UserScreenConvertor.cs" />
     <Compile Include="ConfigManage.cs" />
     <Compile Include="Entity\QuotationGroup0224G.cs" />
     <Compile Include="Entity\QuotationGroupDetails0224G.cs" />
