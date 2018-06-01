@@ -72,7 +72,7 @@ namespace BlueCat.Tests
             string xmlPath = Path.Combine(_tempWorkPath, "Decompress", "GridLayoutInfo.xml");
 
             //获取数据库数据
-            List<yh_tclientconfig> dbconfigs = ConfigManage.GetServerConfigInfo(10005, "0", "OPLUS_20171130B");
+            List<yh_tclientconfig> dbconfigs = ConfigManage.GetServerConfigInfo(10005, "OPLUS_20171130B");
             if (dbconfigs.Count <= 0)
             {
                 Assert.Fail();

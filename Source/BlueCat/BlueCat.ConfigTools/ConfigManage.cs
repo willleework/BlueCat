@@ -34,6 +34,11 @@ namespace BlueCat.ConfigTools
         /// 行情配置文件
         /// </summary>
         private static string quotationGroup = "QuotationGroup.xml";
+
+        /// <summary>
+        /// 自由布局文件
+        /// </summary>
+        private static string customLayout = "CustomLayoutConfig.xml";
         #endregion
 
         #region 数据库操作
@@ -44,12 +49,12 @@ namespace BlueCat.ConfigTools
         /// <param name="client_config_type"></param>
         /// <param name="sys_version_no"></param>
         /// <returns></returns>
-        public static List<yh_tclientconfig> GetServerConfigInfo(int operator_no, string client_config_type, string sys_version_no)
+        public static List<yh_tclientconfig> GetServerConfigInfo(int operator_no, string sys_version_no)
         {
             using (MySQL1130C _mySQL = new MySQL1130C())
             {
                 _mySQL.Database.Connection.ConnectionString = _dbConnect;
-                return _mySQL.yh_tclientconfig.ToList().Where(p => p.operator_no == operator_no && ReplaceErrChar(p.client_config_type) == client_config_type && ReplaceErrChar(p.sys_version_no) == sys_version_no).ToList();
+                return _mySQL.yh_tclientconfig.ToList().Where(p => p.operator_no == operator_no  && ReplaceErrChar(p.sys_version_no) == sys_version_no).ToList();
             }
         }
 
@@ -123,7 +128,7 @@ namespace BlueCat.ConfigTools
         /// <summary>
         /// 将配置保存到实体类
         /// </summary>
-        private static void SaveConfigInfoToModels(List<yh_tclientconfig> configs, string localZip, string sys_version_no_new)
+        private static void SaveConfigInfoToModels(List<yh_tclientconfig> configs, string localZip, string sys_version_no_new,int config_version, string client_config_type)
         {
             string cmpFileName;
             int serial_no = 1;
@@ -142,8 +147,8 @@ namespace BlueCat.ConfigTools
                 string dbStr = Convert.ToBase64String(dbBytes);
                 configs[i].config_info = dbStr;
                 configs[i].sys_version_no = sys_version_no_new;
-                configs[i].config_version = 1;
-                configs[i].update_date = int.Parse(DateTime.Now.Date.ToString("yyyymmdd"));
+                configs[i].config_version = config_version;
+                configs[i].update_date = int.Parse(DateTime.Now.Date.ToString("yyyyMMdd"));
                 configs[i].update_time = int.Parse(DateTime.Now.ToString("HHMMss"));
                 configs[i].serial_no = serial_no++;
             }
@@ -206,10 +211,11 @@ namespace BlueCat.ConfigTools
         /// 配置文件更新
         /// </summary>
         /// <param name="conConfig">数据库连接配置信息</param>
-        public static void ModifyServerConfig(string conConfig, int operate_no, string client_config_type, string sys_version_no, string sys_version_no_new, string taskConfig, CachePool pool)
+        public static void ModifyServerConfig(string conConfig, int operate_no, string sys_version_no, string sys_version_no_new, int config_version, string taskConfig, CachePool pool)
         {
             try
             {
+                int process = 0;
                 MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始执行修改：操作员序号【{0}】;系统版本【{1}】；待更新系统版本【{2}】", operate_no, sys_version_no, sys_version_no_new)));
                 string workPath = Path.Combine(Environment.CurrentDirectory, "ConfigManageTempWork");
                 string zipPath = Path.Combine(workPath, "Compress");
@@ -221,117 +227,181 @@ namespace BlueCat.ConfigTools
                 //生成配置文件路径
                 string gridLayoutPath = Path.Combine(deZipPath, gridLayoutConfig);
                 string quotationPath = Path.Combine(deZipPath, quotationGroup);
+                string customLayoutPath = Path.Combine(deZipPath, customLayout);
 
                 _dbConnect = conConfig;
 
-                #region 创建工作目录
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始配置工作路径", 2));
-
-                if (Directory.Exists(zipPath))
-                {
-                    Directory.Delete(zipPath, true);
-                }
-                Directory.CreateDirectory(zipPath);
-
-                if (Directory.Exists(deZipPath))
-                {
-                    Directory.Delete(deZipPath, true);
-                }
-                Directory.CreateDirectory(deZipPath);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("工作路径配置成功", 5));
-                #endregion
-
                 #region 从数据库获取配置信息
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始从数据库查询用户配置信息", 6));
+                process = 6;
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始从数据库查询用户配置信息", process));
                 //从数据库获取配置信息
-                List<yh_tclientconfig> configs = GetServerConfigInfo(operate_no, client_config_type, sys_version_no);
+                List<yh_tclientconfig> configs = GetServerConfigInfo(operate_no, sys_version_no);
                 if (configs.Count <= 0)
                 {
-                    PrintErrEndLine("数据库查询不到相关配置信息", 0);
+                    process = 0;
+                    PrintErrEndLine("数据库查询不到相关配置信息", process);
                     return;
                 }
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("查询配置信息成功", 20));
-
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解析数据库配置信息", 21));
-                //筛选出最大版本号（config_version）的配置信息并按照文件序号排序（serial_no压缩包顺序）
-                int config_version = configs.Max(p => p.config_version);
-                configs = configs.Where(p => p.config_version == config_version).ToList().OrderBy(p => p.serial_no).ToList();
-                //后续要做新增操作，此处拷贝一份作为插入数据
-                configs = configs.Select(p => ShallowCoty(p)).ToList();
-                //解析数据库信息生成压缩文件
-                string cmpFileName;
-                for (int i = 0; i < configs.Count; i++)
-                {
-                    cmpFileName = "serverData.7z." + (i + 1).ToString().PadLeft(3, '0');
-                    GetConfigFileFromDbData(configs[i].config_info, Path.Combine(zipPath, cmpFileName));
-                }
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件成功", 30));
-
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解压文件", 31));
-                //解压文件并获取表格配置信息
-                FileConvertor.SevenZipDecompress(serverZip, deZipPath);
-                MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", 40)); 
+                process = 10;
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("查询配置信息成功", process));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
                 #endregion
-
-                #region 修改GridConfig
-                if (File.Exists(gridLayoutPath))
+                List<string> client_config_types = new List<string>() { "0", "1", "2" };
+                int processPer = 90 / client_config_types.Count;
+                if (processPer <= 0)
                 {
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改GridLayoutInfo文件", 41));
-                    GridLayoutConvertor gridConvertor = new GridLayoutConvertor(taskConfig);
-                    gridConvertor.GridLayoutConfigModify(gridLayoutPath, gridLayoutPath);
-                    needModify = true;
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改GridLayoutInfo文件成功", 55));
+                    processPer = 1;
                 }
-                else
+                for (int j = 0; j < client_config_types.Count; j++)
                 {
-                    PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件", 55);
-                }
-                #endregion
-
-                #region 修改行情文件
-                if (File.Exists(quotationPath))
-                {
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改QuotationGroup文件", 56));
-                    FutureQuotationConvertor convertor = new FutureQuotationConvertor(pool);
-                    convertor.FutureQuotationModify(quotationPath, quotationPath);
-                    needModify = true;
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("用户QuotationGroup文件处理成功", 70));
-                }
-                else
-                {
-                    PrintErrEndLine("该用户尚未生成QuotationGroup配置文件", 70);
-                }
-                #endregion
-
-                #region 保存数据到数据库
-                if (needModify)
-                {
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", 71));
-                    //压缩文件
-                    FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
-
-                    SaveConfigInfoToModels(configs, localZip, sys_version_no_new);
-
-                    if (configs.Count <= 0)
+                    int processBegin = process;
+                    string config_type = client_config_types[j];
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("开始修改类型【{0}】的配置数据", config_type), process));
+                    List<yh_tclientconfig> config_curType = configs.Where(p => ReplaceErrChar(p.client_config_type) == config_type).ToList();
+                    if (config_curType.Count <= 0)
                     {
-                        PrintErrEndLine("没有需要保存的数据", 0);
-                        return;
+                        PrintErrEndLine(string.Format("找不到类型【{0}】配置文件", config_type), process);
+                        continue;
                     }
+                    process = (int)(process + processPer * 0.1);
+                    #region 创建工作目录
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始配置工作路径", process));
 
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始保存信息到数据库", 75));
-                    //保存到数据库
-                    AddConfigInfo2DB(configs);
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", 100));
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
+                    if (Directory.Exists(zipPath))
+                    {
+                        Directory.Delete(zipPath, true);
+                    }
+                    Directory.CreateDirectory(zipPath);
+
+                    if (Directory.Exists(deZipPath))
+                    {
+                        Directory.Delete(deZipPath, true);
+                    }
+                    Directory.CreateDirectory(deZipPath);
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("工作路径配置成功", process));
+                    #endregion
+
+                    process = (int)(process + processPer * 0.1);//10%
+                    #region 解析数据库数据
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解析数据库配置信息", process));
+                    //筛选出最大版本号（config_version）的配置信息并按照文件序号排序（serial_no压缩包顺序）
+                    int max_config_version = config_curType.Max(p => p.config_version);
+                    config_curType = config_curType.Where(p => p.config_version == max_config_version).ToList().OrderBy(p => p.serial_no).ToList();
+                    //后续要做新增操作，此处拷贝一份作为插入数据
+                    config_curType = config_curType.Select(p => ShallowCoty(p)).ToList();
+                    //解析数据库信息生成压缩文件
+                    string cmpFileName;
+                    for (int i = 0; i < config_curType.Count; i++)
+                    {
+                        cmpFileName = "serverData.7z." + (i + 1).ToString().PadLeft(3, '0');
+                        GetConfigFileFromDbData(config_curType[i].config_info, Path.Combine(zipPath, cmpFileName));
+                    }
+                    process = (int)(process + processPer * 0.2);//30%
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("解析数据库信息生成压缩文件成功", process));
+
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始解压文件", process));
+                    //解压文件并获取表格配置信息
+                    FileConvertor.SevenZipDecompress(serverZip, deZipPath);
+                    process = (int)(process + processPer * 0.1);//40%
+                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", process));
+                    #endregion
+
+                    #region 修改GridConfig
+                    if (config_type.Equals("0"))
+                    {
+                        if (File.Exists(gridLayoutPath))
+                        {
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改GridLayoutInfo文件", process));
+                            GridLayoutConvertor gridConvertor = new GridLayoutConvertor(taskConfig);
+                            gridConvertor.GridLayoutConfigModify(gridLayoutPath, gridLayoutPath);
+                            needModify = true;
+                            process = (int)(process + processPer * 0.3);
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改GridLayoutInfo文件成功", process));//70%
+                        }
+                        else
+                        {
+                            process = 70;
+                            PrintErrEndLine("该用户尚未生成GridLayoutInfo配置文件", process);
+                        }
+                    }
+                    #endregion
+
+                    #region 修改行情文件
+                    if (config_type.Equals("2"))
+                    {
+                        if (File.Exists(quotationPath))
+                        {
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改QuotationGroup文件", process));
+                            FutureQuotationConvertor convertor = new FutureQuotationConvertor(pool);
+                            convertor.FutureQuotationModify(quotationPath, quotationPath);
+                            needModify = true;
+                            process = (int)(process + processPer * 0.15);
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("用户QuotationGroup文件处理成功", process));
+                        }
+                        else
+                        {
+                            process = (int)(process + processPer * 0.15);
+                            PrintErrEndLine("该用户尚未生成QuotationGroup配置文件", process);
+                        }
+
+                        if (File.Exists(customLayoutPath))
+                        {
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改CustomLayoutConfig文件", process));
+                            CustomLayoutConvertor layoutConvertor = new CustomLayoutConvertor(taskConfig);
+                            if (layoutConvertor.ModifyParams.Count <= 0)
+                            {
+                                process = (int)(process + processPer * 0.15);
+                                MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有检测到需要修改的项目", process));
+                            }
+                            else
+                            {
+                                layoutConvertor.CustomLayoutModify(customLayoutPath, customLayoutPath);
+                                needModify = true;
+                                process = (int)(process + processPer * 0.15);
+                                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改CustomLayoutConfig文件成功", process));//70%
+                            }
+                        }
+                        else
+                        {
+                            process = (int)(process + processPer * 0.15);
+                            PrintErrEndLine("该用户尚未生成CustomLayoutConfig配置文件", process);
+                        }
+                    }
+                    #endregion
+
+                    #region 保存数据到数据库
+                    if (needModify)
+                    {
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs("压缩文件", process));
+                        //压缩文件
+                        FileConvertor.SevenZipCompress(deZipPath, localZip, 11);
+
+                        SaveConfigInfoToModels(config_curType, localZip, sys_version_no_new, config_version, config_type);
+
+                        if (config_curType.Count <= 0)
+                        {
+                            PrintErrEndLine("没有需要保存的数据", 0);
+                            return;
+                        }
+
+                        process = (int)(process + processPer * 0.1);
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始保存信息到数据库", process));//80%
+                        //保存到数据库
+                        AddConfigInfo2DB(config_curType);
+                        process = (int)(process + processPer * 0.2);
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改成功", process));//100%
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+                    }
+                    else
+                    {
+                        process = processBegin + processPer;//100%
+                        MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有需要修改的文件", process));
+                    }
+                    #endregion
                 }
-                else
-                {
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有需要修改的文件", 100));
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
-                    MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
-                } 
-                #endregion
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs(string.Format("!!!修改完成!!!操作员序号【{0}】;系统版本【{1}】；更新系统版本【{2}】", operate_no, sys_version_no, sys_version_no_new), 100));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs("------------------------------------------------"));
+                MesageEvent?.Invoke(null, new ConfigManageEventArgs(Environment.NewLine));
             }
             catch (Exception ex)
             {

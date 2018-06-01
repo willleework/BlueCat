@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigConvertor\CustomLayoutConvertor.cs" />
     <Compile Include="ConfigConvertor\FutureQuotationConvertor.cs" />
     <Compile Include="ConfigConvertor\GridLayoutConvertor.cs" />
     <Compile Include="ConfigManage.cs" />

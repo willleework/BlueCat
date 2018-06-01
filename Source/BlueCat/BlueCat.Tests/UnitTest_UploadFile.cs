@@ -92,15 +92,15 @@ namespace BlueCat.Tests
         [TestMethod]
         public void TestMethod_Download7zFile()
         {
-            string sysversion = "OPLUS_20171130Y3";
+            string sysversion = "OPLUS_20170224I";
             string zipPath = Path.Combine(workPath, "Compress", DateTime.Now.ToString(sysversion + "-yyyyMMdd-HHmmssfff") + ".7z.");
-            int companyid = 300001;
-            int operateno = 10005;
-            int configversion = 1;
+            int companyid = 302000;
+            int operateno = 1214;
+            int configversion = 2;
             int serialno = 1;
             //yh_tclientconfig config = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion && p.serial_no == serialno).First();
 
-            List<yh_tclientconfig> configs = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "0" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion ).ToList();
+            List<yh_tclientconfig> configs = dbtrade.yh_tclientconfig.Where(p => p.client_config_type == "1" && p.company_id == companyid && p.config_version == configversion && p.operator_no == operateno && p.sys_version_no == sysversion ).ToList();
             foreach (yh_tclientconfig config in configs)
             {
                 byte[] datas = Convert.FromBase64String(config.config_info);

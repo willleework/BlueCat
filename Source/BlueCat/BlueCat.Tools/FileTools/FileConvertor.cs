@@ -22,17 +22,71 @@ namespace BlueCat.Tools.FileTools
             return string.Empty;
         }
 
+        #region 写文件
+        /****************************************
+         * 函数名称：WriteFile
+         * 功能说明：当文件不存时，则创建文件，并追加文件
+         * 参    数：Path:文件路径,Strings:文本内容
+         * 调用示列：
+         *           string Path = Server.MapPath("Default2.aspx");       
+         *           string Strings = "这是我写的内容啊";
+         *           Common.Utility.FileOperate.WriteFile(Path,Strings);
+        *****************************************/
+        /// <summary>
+        /// 写文件
+        /// </summary>
+        /// <param name="Path">文件路径</param>
+        /// <param name="Strings">文件内容</param>
+        public static void WriteFile(string Path, string Strings)
+        {
+
+            if (!System.IO.File.Exists(Path))
+            {
+                System.IO.FileStream f = System.IO.File.Create(Path);
+                f.Close();
+                f.Dispose();
+            }
+            System.IO.StreamWriter f2 = new System.IO.StreamWriter(Path, true, System.Text.Encoding.UTF8);
+            f2.WriteLine(Strings);
+            f2.Close();
+            f2.Dispose();
+
+
+        }
+        #endregion
+
+        #region 读文件
+        /****************************************
+         * 函数名称：ReadFile
+         * 功能说明：读取文本内容
+         * 参    数：Path:文件路径
+         * 调用示列：
+         *           string Path = Server.MapPath("Default2.aspx");       
+         *           string s = Common.Utility.FileOperate.ReadFile(Path);
+        *****************************************/
+        /// <summary>
+        /// 读文件
+        /// </summary>
+        /// <param name="Path">文件路径</param>
+        /// <returns></returns>
+        public static string ReadFile(string Path)
+        {
+            string s = "";
+            if (!System.IO.File.Exists(Path))
+                s = "不存在相应的目录";
+            else
+            {
+                StreamReader f2 = new StreamReader(Path, System.Text.Encoding.UTF8);
+                s = f2.ReadToEnd();
+                f2.Close();
+                f2.Dispose();
+            }
+
+            return s;
+        }
+        #endregion
 
         #region 序列化
-        /// <summary>
-        /// 将字符串写入指定文件
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="info"></param>
-        public static void WriteFile(string filePath, string info)
-        {
-            System.IO.File.WriteAllText(filePath, info);
-        }
 
         /// <summary>
         /// 序列化

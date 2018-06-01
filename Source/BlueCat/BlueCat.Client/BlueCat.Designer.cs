@@ -58,7 +58,6 @@
             this.btn_cfgFile = new System.Windows.Forms.Button();
             this.txt_cfg = new System.Windows.Forms.TextBox();
             this.txt_sys_version_no = new System.Windows.Forms.TextBox();
-            this.txt_client_config_type = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -66,12 +65,14 @@
             this.txt_operate_no = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.rtb_Monitor = new System.Windows.Forms.RichTextBox();
+            this.txt_config_version = new System.Windows.Forms.NumericUpDown();
             this.statusStrip1.SuspendLayout();
             this.inputGroup.SuspendLayout();
             this.tabDataBase.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txt_config_version)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -241,6 +242,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.txt_config_version);
             this.tabPage2.Controls.Add(this.btn_SaveLog);
             this.tabPage2.Controls.Add(this.btn_Clear);
             this.tabPage2.Controls.Add(this.btn_Reset);
@@ -251,7 +253,6 @@
             this.tabPage2.Controls.Add(this.btn_cfgFile);
             this.tabPage2.Controls.Add(this.txt_cfg);
             this.tabPage2.Controls.Add(this.txt_sys_version_no);
-            this.tabPage2.Controls.Add(this.txt_client_config_type);
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.label7);
@@ -358,15 +359,6 @@
             this.txt_sys_version_no.Size = new System.Drawing.Size(104, 21);
             this.txt_sys_version_no.TabIndex = 14;
             // 
-            // txt_client_config_type
-            // 
-            this.txt_client_config_type.Location = new System.Drawing.Point(136, 53);
-            this.txt_client_config_type.Name = "txt_client_config_type";
-            this.txt_client_config_type.ReadOnly = true;
-            this.txt_client_config_type.Size = new System.Drawing.Size(79, 21);
-            this.txt_client_config_type.TabIndex = 13;
-            this.txt_client_config_type.Text = "0";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -391,9 +383,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(13, 56);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(125, 12);
+            this.label7.Size = new System.Drawing.Size(101, 12);
             this.label7.TabIndex = 10;
-            this.label7.Text = "client_config_type：";
+            this.label7.Text = "config_version：";
             // 
             // label8
             // 
@@ -433,6 +425,28 @@
             this.rtb_Monitor.Text = "";
             this.rtb_Monitor.TextChanged += new System.EventHandler(this.rtb_Monitor_TextChanged);
             // 
+            // txt_config_version
+            // 
+            this.txt_config_version.Location = new System.Drawing.Point(111, 53);
+            this.txt_config_version.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.txt_config_version.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txt_config_version.Name = "txt_config_version";
+            this.txt_config_version.Size = new System.Drawing.Size(83, 21);
+            this.txt_config_version.TabIndex = 24;
+            this.txt_config_version.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // BlueCat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -455,6 +469,7 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txt_config_version)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -478,7 +493,6 @@
         private System.Windows.Forms.TextBox txt_dbpot;
         private System.Windows.Forms.Button btn_DBSetting;
         private System.Windows.Forms.TextBox txt_sys_version_no;
-        private System.Windows.Forms.TextBox txt_client_config_type;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
@@ -499,6 +513,7 @@
         private System.Windows.Forms.Button btn_Reset;
         private System.Windows.Forms.Button btn_Clear;
         private System.Windows.Forms.Button btn_SaveLog;
+        private System.Windows.Forms.NumericUpDown txt_config_version;
     }
 }
 

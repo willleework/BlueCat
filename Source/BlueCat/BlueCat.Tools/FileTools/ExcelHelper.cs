@@ -136,15 +136,25 @@ namespace BlueCat.Tools.FileTools
         /// <param name="excelFilePath">Excel文件路径，为物理路径。</param>
         /// <param name="headerRowIndex">Excel表头行索引，0表示自动识别</param>
         /// <param name="columnCount">Excel列数，0表示自动识别</param>
+        /// <param name="tableName">Excel页签名称, 空表示第一个</param>
         /// <returns></returns>
-        public static List<T> ImputFromExcel<T>(string excelFilePath, int headerRowIndex = 0, int columnCount = 0) where T : new()
+        public static List<T> ImputFromExcel<T>(string excelFilePath, int headerRowIndex = 0, int columnCount = 0, string tableName = "") where T : new()
         {
             DataSet ds = ImportDataSetFromExcel(excelFilePath, headerRowIndex, columnCount);
             if (ds.Tables.Count < 1)
             {
                 throw new Exception("由Excel直接读取实体类对象失败，Excel应至少有一个sheet页");
             }
-            return ConvertFromDataTable<T>(ds.Tables[0]);
+            DataTable dataTable;
+            if (ds.Tables.Contains(tableName))
+            {
+                dataTable = ds.Tables[tableName];
+            }
+            else
+            {
+                dataTable = ds.Tables[0];
+            }
+            return ConvertFromDataTable<T>(dataTable);
         }
 
         /// <summary>
@@ -557,7 +567,7 @@ namespace BlueCat.Tools.FileTools
                     return false;
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex){ return false; }
         }
     }
 

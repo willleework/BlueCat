@@ -75,7 +75,7 @@ namespace BlueCat.Client
             txt_operate_no.Text = userParam.LastOperateNo;
             txt_sys_version_no.Text = userParam.LastSysVersionNo;
             txt_sys_ver_no_new.Text = userParam.NextSysVersionNo;
-            txt_client_config_type.Text = userParam.LastClientConfigType;
+            txt_config_version.Value = userParam.LastClientConfigType;
             txt_cfg.Text = userParam.ConfigPath;
 
             if (string.IsNullOrEmpty(txt_operate_no.Text))
@@ -178,7 +178,7 @@ namespace BlueCat.Client
         private void btn_Modify_Click(object sender, EventArgs e)
         {
             string dbConn = string.Format("server={0};user id={1};password={2};port={3};persistsecurityinfo=True;database={4}", _dbip, _dbuser, _dbpass, _dbpot, _dbName);
-            string client_cfig_type = txt_client_config_type.Text;
+            string client_cfig_type = txt_config_version.Text;
             string sys_serversion_curr = txt_sys_version_no.Text;
             string sys_ver_no_next = txt_sys_ver_no_new.Text;
             string cfg = txt_cfg.Text;
@@ -190,7 +190,7 @@ namespace BlueCat.Client
                 {
                     foreach (int opt in opts)
                     {
-                        ConfigManage.ModifyServerConfig(dbConn, opt, client_cfig_type, sys_serversion_curr, sys_ver_no_next, cfg, pool);
+                        ConfigManage.ModifyServerConfig(dbConn, opt, sys_serversion_curr, sys_ver_no_next, (int)txt_config_version.Value, cfg, pool);
                     }
                 }
                 finally
@@ -306,6 +306,7 @@ namespace BlueCat.Client
             //进度条控制
             if (args.ProgressIndex >= 0)
             {
+                if (args.ProgressIndex > 100) args.ProgressIndex = 100;
                 toolbarStatus.Value = args.ProgressIndex;
             }
         }
@@ -367,7 +368,7 @@ namespace BlueCat.Client
             userParam.LastOperateNo = txt_operate_no.Text;
             userParam.LastSysVersionNo = txt_sys_version_no.Text;
             userParam.NextSysVersionNo = txt_sys_ver_no_new.Text;
-            userParam.LastClientConfigType = txt_client_config_type.Text;
+            userParam.LastClientConfigType = (int)txt_config_version.Value;
             userParam.ConfigPath = txt_cfg.Text;
             FileConvertor.ObjectSerializeXmlFile(userParam, configPath);
         } 

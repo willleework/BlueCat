@@ -20,7 +20,7 @@ namespace BlueCat.Client
 
         public string LastOperateNo { get; set; }
 
-        public string LastClientConfigType { get; set; }
+        public int LastClientConfigType { get; set; }
 
         public string LastSysVersionNo { get; set; }
 
