@@ -43,7 +43,42 @@ namespace BlueCat.ConfigTools
             {
                 config = config.Replace(param.FormerFieldValue, param.CurrentFieldValue);
             }
-            FileConvertor.WriteFile(desPath, config.ToString());
+            string configText = MultiTradeModify(config.ToString());
+
+            FileConvertor.WriteFile(desPath, configText);
+        }
+
+        /// <summary>
+        /// 多产品tabcontrol节点特殊处理
+        /// </summary>
+        /// <param name="text"></param>
+        private string MultiTradeModify(string text)
+        {
+            int beginIndex = text.IndexOf("<MenuName>FutureMultiTrade</MenuName>");
+            if (beginIndex < 0)
+            {
+                return text;
+            }
+            int endIndex = text.IndexOf("</SaveParamItem>", beginIndex);
+            if (endIndex < beginIndex || endIndex >= text.Length)
+            {
+                return text;
+            }
+
+            text = TextModifyByIndexScope(beginIndex, endIndex, text);
+            return text;
+        }
+
+        private string TextModifyByIndexScope(int beginIndex, int endInex, string text)
+        {
+            if (beginIndex <= 0 || text.Length <= endInex)
+            {
+                return text;
+            }
+            string textForEdit = text.Substring(beginIndex, endInex - beginIndex);
+            string modifyText = textForEdit.Replace("\"oTabControl1\"", "\"tabQurey\"");
+            modifyText = modifyText.Replace("\"pankou\"", "\"panKou\"");
+            return text.Replace(textForEdit, modifyText);
         }
     }
 

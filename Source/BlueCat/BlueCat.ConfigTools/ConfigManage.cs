@@ -312,7 +312,7 @@ namespace BlueCat.ConfigTools
                     MesageEvent?.Invoke(null, new ConfigManageEventArgs("解压文件成功", process));
                     #endregion
 
-                    #region 修改GridConfig
+                    #region 修改类型0的配置文件
                     if (config_type.Equals("0"))
                     {
                         //修改GridConfig

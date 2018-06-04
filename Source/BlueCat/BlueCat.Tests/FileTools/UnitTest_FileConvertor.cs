@@ -30,6 +30,23 @@ namespace BlueCat.Tools.FileTools.Tests
         }
 
         [TestMethod]
+        public void CustomlayoutModify1_Test()
+        {
+            string configStr = FileConvertor.ReadFile("D:\\customTest\\CustomLayoutConfig.xml");
+            int beginIndex = configStr.IndexOf("<MenuName>FutureMultiTrade</MenuName>");
+            if (beginIndex >= 0)
+            {
+                int endIndex = configStr.IndexOf("</SaveParamItem>", beginIndex);
+
+                string multstr = configStr.Substring(beginIndex, endIndex);
+
+                string newStr = multstr.Replace("tabQurey", "oTabControl1");
+
+                configStr = configStr.Replace(multstr, newStr);
+            }
+        }
+
+        [TestMethod]
         public void UserScreenModifyTest()
         {
             string excelPath = "F:\\ConfigTest\\task.xlsx";
