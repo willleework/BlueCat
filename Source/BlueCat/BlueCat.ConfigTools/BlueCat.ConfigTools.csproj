@@ -60,10 +60,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigConvertor\CustomLayoutConvertor.cs" />
+    <Compile Include="ConfigConvertor\FutureLocalParamConvertor.cs" />
     <Compile Include="ConfigConvertor\FutureQuotationConvertor.cs" />
     <Compile Include="ConfigConvertor\GridLayoutConvertor.cs" />
     <Compile Include="ConfigConvertor\UserScreenConvertor.cs" />
     <Compile Include="ConfigManage.cs" />
+    <Compile Include="Entity\ContractShortCut.cs" />
+    <Compile Include="Entity\DefaultHandNum.cs" />
+    <Compile Include="Entity\DefaultPrice.cs" />
+    <Compile Include="Entity\FutureLocalParam0224.cs" />
+    <Compile Include="Entity\FutureLocalParam1130.cs" />
+    <Compile Include="Entity\PlateSet.cs" />
     <Compile Include="Entity\QuotationGroup0224G.cs" />
     <Compile Include="Entity\QuotationGroupDetails0224G.cs" />
     <Compile Include="Entity\QuotationGroup1130.cs" />
@@ -74,6 +81,8 @@
     <Compile Include="Entity\GridLayoutInfo.cs" />
     <Compile Include="Entity\GridLayoutTableInfo.cs" />
     <Compile Include="Entity\GridLayoutViewInfo.cs" />
+    <Compile Include="Entity\ShortCutSet.cs" />
+    <Compile Include="Entity\TraceParam.cs" />
     <Compile Include="Enum\Enum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

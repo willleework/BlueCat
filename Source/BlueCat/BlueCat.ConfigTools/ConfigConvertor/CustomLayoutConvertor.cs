@@ -45,7 +45,7 @@ namespace BlueCat.ConfigTools
             }
             string configText = MultiTradeModify(config.ToString());
 
-            FileConvertor.WriteFile(desPath, configText);
+            FileConvertor.WriteFile(desPath, configText, false);
         }
 
         /// <summary>

@@ -44,6 +44,11 @@ namespace BlueCat.ConfigTools
         /// 综合屏配置文件
         /// </summary>
         private static string userScreen = "UserScreenInfo.xml";
+
+        /// <summary>
+        /// 期货本地参数
+        /// </summary>
+        private static string futurelocalParam = "FutureLocalParam.xml";
         #endregion
 
         #region 数据库操作
@@ -234,6 +239,7 @@ namespace BlueCat.ConfigTools
                 string quotationPath = Path.Combine(deZipPath, quotationGroup);
                 string customLayoutPath = Path.Combine(deZipPath, customLayout);
                 string userScreenPath = Path.Combine(deZipPath, userScreen);
+                string futurelocalParamPath = Path.Combine(deZipPath, futurelocalParam);
 
                 _dbConnect = conConfig;
 
@@ -354,7 +360,7 @@ namespace BlueCat.ConfigTools
                     }
                     #endregion
 
-                    #region 修改行情文件
+                    #region 修改类型2的配置文件
                     if (config_type.Equals("2"))
                     {
                         if (File.Exists(quotationPath))
@@ -378,21 +384,44 @@ namespace BlueCat.ConfigTools
                             CustomLayoutConvertor layoutConvertor = new CustomLayoutConvertor(taskConfig);
                             if (layoutConvertor.ModifyParams.Count <= 0)
                             {
-                                process = (int)(process + processPer * 0.15);
+                                process = (int)(process + processPer * 0.1);
                                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有检测到需要修改的项目", process));
                             }
                             else
                             {
                                 layoutConvertor.CustomLayoutModify(customLayoutPath, customLayoutPath);
                                 needModify = true;
-                                process = (int)(process + processPer * 0.15);
+                                process = (int)(process + processPer * 0.1);
                                 MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改CustomLayoutConfig文件成功", process));//70%
                             }
                         }
                         else
                         {
-                            process = (int)(process + processPer * 0.15);
+                            process = (int)(process + processPer * 0.1);
                             PrintErrEndLine("该用户尚未生成CustomLayoutConfig配置文件", process);
+                        }
+
+                        if (File.Exists(futurelocalParamPath))
+                        {
+                            MesageEvent?.Invoke(null, new ConfigManageEventArgs("开始修改FutureLocalParam文件", process));
+                            FutureLocalParamConvertor futureLocalParamConvertor = new FutureLocalParamConvertor(taskConfig, pool);
+                            if (futureLocalParamConvertor.ModifyParams.Count <= 0)
+                            {
+                                process = (int)(process + processPer * 0.1);
+                                MesageEvent?.Invoke(null, new ConfigManageEventArgs("没有检测到需要修改的项目", process));
+                            }
+                            else
+                            {
+                                futureLocalParamConvertor.FutureLocalParamModify(futurelocalParamPath, futurelocalParamPath);
+                                needModify = true;
+                                process = (int)(process + processPer * 0.1);
+                                MesageEvent?.Invoke(null, new ConfigManageEventArgs("修改FutureLocalParam文件成功", process));//70%
+                            }
+                        }
+                        else
+                        {
+                            process = (int)(process + processPer * 0.1);
+                            PrintErrEndLine("该用户尚未生成FutureLocalParam配置文件", process);
                         }
                     }
                     #endregion

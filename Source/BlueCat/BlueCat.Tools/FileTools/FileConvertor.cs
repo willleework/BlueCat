@@ -37,7 +37,7 @@ namespace BlueCat.Tools.FileTools
         /// </summary>
         /// <param name="Path">文件路径</param>
         /// <param name="Strings">文件内容</param>
-        public static void WriteFile(string Path, string Strings)
+        public static void WriteFile(string Path, string Strings, bool append = true)
         {
 
             if (!System.IO.File.Exists(Path))
@@ -46,7 +46,7 @@ namespace BlueCat.Tools.FileTools
                 f.Close();
                 f.Dispose();
             }
-            System.IO.StreamWriter f2 = new System.IO.StreamWriter(Path, true, System.Text.Encoding.UTF8);
+            System.IO.StreamWriter f2 = new System.IO.StreamWriter(Path, append, System.Text.Encoding.UTF8);
             f2.WriteLine(Strings);
             f2.Close();
             f2.Dispose();

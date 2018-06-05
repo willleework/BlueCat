@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BlueCat.ConfigTools;
 using System.IO;
+using BlueCat.Cache;
 
 namespace BlueCat.Tools.FileTools.Tests
 {
@@ -54,6 +55,19 @@ namespace BlueCat.Tools.FileTools.Tests
             string configFile1 = "F:\\ConfigTest\\newUserScreenInfo.xml";
             UserScreenConvertor screen = new UserScreenConvertor(excelPath);
             screen.UserScreenModify(configFile, configFile1);
+        }
+
+        [TestMethod]
+        public void FutureLocalParamModify_Test()
+        {
+            string excelPath = "F:\\ConfigTest\\task.xlsx";
+            string configFile = "F:\\ConfigTest\\FutureLocalParam.xml";
+            string newFile = string.Format("F:\\ConfigTest\\FutureLocalParam{0}.xml", DateTime.Now.ToString("yyyyMMdd-HHmmss-fff"));
+            string conn = "server=192.168.117.101;user id=root;password=ggcjdss2017;persistsecurityinfo=True;database=hdback";
+            CachePool pool = new CachePool();
+            pool.Init(conn);
+            FutureLocalParamConvertor local = new FutureLocalParamConvertor(excelPath, pool);
+            local.FutureLocalParamModify(configFile, configFile);
         }
     }
 }

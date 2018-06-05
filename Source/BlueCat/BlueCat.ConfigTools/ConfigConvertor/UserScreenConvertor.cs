@@ -46,7 +46,7 @@ namespace BlueCat.ConfigTools
             {
                 config = config.Replace(param.FormerFieldValue, param.CurrentFieldValue);
             }
-            FileConvertor.WriteFile(desPath, config.ToString());
+            FileConvertor.WriteFile(desPath, config.ToString(), false);
         }
     }
 }
