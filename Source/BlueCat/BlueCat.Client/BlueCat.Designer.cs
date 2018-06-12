@@ -48,6 +48,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txt_dbip = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.txt_config_version = new System.Windows.Forms.NumericUpDown();
             this.btn_SaveLog = new System.Windows.Forms.Button();
             this.btn_Clear = new System.Windows.Forms.Button();
             this.btn_Reset = new System.Windows.Forms.Button();
@@ -65,14 +66,14 @@
             this.txt_operate_no = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.rtb_Monitor = new System.Windows.Forms.RichTextBox();
-            this.txt_config_version = new System.Windows.Forms.NumericUpDown();
+            this.ckbIsSetConfigVer = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.inputGroup.SuspendLayout();
             this.tabDataBase.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txt_config_version)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -242,6 +243,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.ckbIsSetConfigVer);
             this.tabPage2.Controls.Add(this.txt_config_version);
             this.tabPage2.Controls.Add(this.btn_SaveLog);
             this.tabPage2.Controls.Add(this.btn_Clear);
@@ -265,6 +267,28 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "配置修改";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // txt_config_version
+            // 
+            this.txt_config_version.Location = new System.Drawing.Point(111, 53);
+            this.txt_config_version.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.txt_config_version.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txt_config_version.Name = "txt_config_version";
+            this.txt_config_version.Size = new System.Drawing.Size(82, 21);
+            this.txt_config_version.TabIndex = 24;
+            this.txt_config_version.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // btn_SaveLog
             // 
@@ -425,27 +449,14 @@
             this.rtb_Monitor.Text = "";
             this.rtb_Monitor.TextChanged += new System.EventHandler(this.rtb_Monitor_TextChanged);
             // 
-            // txt_config_version
+            // ckbIsSetConfigVer
             // 
-            this.txt_config_version.Location = new System.Drawing.Point(111, 53);
-            this.txt_config_version.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.txt_config_version.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.txt_config_version.Name = "txt_config_version";
-            this.txt_config_version.Size = new System.Drawing.Size(83, 21);
-            this.txt_config_version.TabIndex = 24;
-            this.txt_config_version.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.ckbIsSetConfigVer.AutoSize = true;
+            this.ckbIsSetConfigVer.Location = new System.Drawing.Point(199, 56);
+            this.ckbIsSetConfigVer.Name = "ckbIsSetConfigVer";
+            this.ckbIsSetConfigVer.Size = new System.Drawing.Size(15, 14);
+            this.ckbIsSetConfigVer.TabIndex = 25;
+            this.ckbIsSetConfigVer.UseVisualStyleBackColor = true;
             // 
             // BlueCat
             // 
@@ -468,8 +479,8 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txt_config_version)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -514,6 +525,7 @@
         private System.Windows.Forms.Button btn_Clear;
         private System.Windows.Forms.Button btn_SaveLog;
         private System.Windows.Forms.NumericUpDown txt_config_version;
+        private System.Windows.Forms.CheckBox ckbIsSetConfigVer;
     }
 }
 

@@ -178,7 +178,7 @@ namespace BlueCat.Client
         private void btn_Modify_Click(object sender, EventArgs e)
         {
             string dbConn = string.Format("server={0};user id={1};password={2};port={3};persistsecurityinfo=True;database={4}", _dbip, _dbuser, _dbpass, _dbpot, _dbName);
-            string client_cfig_type = txt_config_version.Text;
+            string client_config_version = txt_config_version.Text;
             string sys_serversion_curr = txt_sys_version_no.Text;
             string sys_ver_no_next = txt_sys_ver_no_new.Text;
             string cfg = txt_cfg.Text;
@@ -190,7 +190,7 @@ namespace BlueCat.Client
                 {
                     foreach (int opt in opts)
                     {
-                        ConfigManage.ModifyServerConfig(dbConn, opt, sys_serversion_curr, sys_ver_no_next, (int)txt_config_version.Value, cfg, pool);
+                        ConfigManage.ModifyServerConfig(dbConn, opt, sys_serversion_curr, sys_ver_no_next, ckbIsSetConfigVer.Checked?(int)txt_config_version.Value:-1, cfg, pool);
                     }
                 }
                 finally
